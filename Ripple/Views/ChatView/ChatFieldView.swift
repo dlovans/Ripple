@@ -7,19 +7,12 @@
 
 import SwiftUI
 
-struct ChatBarView: View {
+struct ChatFieldView: View {
     @State var chatText: String = ""
     @FocusState var displayKeyboard: Bool
     
     var body: some View {
         HStack {
-            Button {
-                
-            } label: {
-                Text("+")
-                    .font(.system(size: 26))
-                    .foregroundStyle(.white)
-            }
             TextField("Type something...", text: $chatText)
                 .foregroundStyle(.white)
                 .overlay(alignment: .leading) {
@@ -31,8 +24,14 @@ struct ChatBarView: View {
                     }
                 }
                 .keyboardType(.default)
-            Image(systemName: "microphone")
-                .foregroundStyle(.white)
+            if !chatText.isEmpty {
+                Button {
+                    
+                } label: {
+                    Image(systemName: "paperplane")
+                        .foregroundStyle(.white)
+                }
+            }
         }
         .frame(maxWidth: .infinity)
         .padding()
@@ -46,5 +45,5 @@ struct ChatBarView: View {
 }
 
 #Preview {
-    ChatBarView()
+    ChatFieldView()
 }
