@@ -8,14 +8,32 @@
 import SwiftUI
 
 struct AuthProviderView: View {
-    private let providerType: ProviderType
-    private let authType: AuthType
+    let authProvider: AuthProvider
+    let authType: AuthType
+    let iconPath: String
     
     var body: some View {
-        Text("tee")
+        Button {
+            print("auth")
+        } label: {
+            HStack (spacing: 15) {
+                Image("\(iconPath)")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                
+                Text("\(authType == .login ? "Sign in with" : "Sign up with") \(authProvider)")
+                    .foregroundStyle(.white)
+                    .font(.headline)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.leading], 20)
+            .padding(.vertical, 10)
+            .background(.black)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
     }
 }
 
 #Preview {
-    AuthProviderView()
+    AuthProviderView(authProvider: .Apple, authType: .login, iconPath: "Apple")
 }
