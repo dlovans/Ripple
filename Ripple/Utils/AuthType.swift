@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum AuthType {
+    case login, register
+}
