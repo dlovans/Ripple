@@ -10,17 +10,13 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         ZStack {
-            Color(.primary)
+            Color(.stone)
                 .ignoresSafeArea()
-            VStack {
-                Text("Ripple")
-            }
-            VStack {
-                Spacer()
-                MenuView()
 
+            VStack {
+                AuthView(authType: .login)
             }
-            .ignoresSafeArea()
+            .padding(1)
         }
     }
 }
