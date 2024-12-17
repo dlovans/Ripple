@@ -11,6 +11,7 @@ struct ChatMessageView: View {
     let username: String
     let message: String
     let isMe: Bool
+    var isPremium = false
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -20,9 +21,10 @@ struct ChatMessageView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(isMe ? Color.emerald : Color(red: 0.5, green: 0.5, blue: 0.5, opacity: 0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
 #Preview {
-    ChatMessageView(username: "Dlovan", message: "chop chop", isMe: false)
+    ChatMessageView(username: "Dlovan", message: "chop chop", isMe: true)
 }
