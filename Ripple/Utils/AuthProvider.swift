@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum AuthProvider {
+    case Google, Apple
+}
