@@ -8,15 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject private var authViewModel: AuthViewModel
     var body: some View {
         ZStack {
             Color(.stone)
                 .ignoresSafeArea()
 
             VStack {
-                AuthView(authType: .login)
+                if authViewModel.isAuthenticated {
+                    ChatView()
+                } else {
+                    AuthView(authType: .login)
+                }
             }
-            .padding(1)
+            .padding()
         }
     }
 }
