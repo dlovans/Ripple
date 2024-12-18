@@ -8,7 +8,12 @@
 import SwiftUI
 
 struct AuthView: View {
-    let authType: AuthType
+    @State private var authType: AuthType
+    @EnvironmentObject private var authViewModel: AuthViewModel
+
+    init(authType: AuthType) {
+        _authType = State(initialValue: authType)
+    }
     
     var body: some View {
         ZStack (alignment: .top) {
@@ -28,8 +33,8 @@ struct AuthView: View {
                 AuthFieldsView(authType: authType)
                 
                 VStack {
-                    AuthProviderView(authProvider: .Apple, authType: .login, iconPath: "Apple")
-                    AuthProviderView(authProvider: .Google, authType: .login, iconPath: "Google")
+                    AuthProviderView(authProvider: .Apple, authType: authType, iconPath: "Apple")
+                    AuthProviderView(authProvider: .Google, authType: authType, iconPath: "Google")
                 }
                 .padding(.top, 40)
                 
@@ -37,7 +42,11 @@ struct AuthView: View {
                     Text("\(authType == .login ? "Don't have an account?" : "Already got an account?")")
                         .foregroundStyle(Color.gray)
                     Button {
-                        print("switching")
+                        if authType == .login {
+                            authType = .register
+                        } else {
+                            authType = .login
+                        }
                     } label: {
                         Text("\(authType == .login ? "Join" : "Login")")
                             .foregroundStyle(.emerald)
