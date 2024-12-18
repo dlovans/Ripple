@@ -19,11 +19,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct RippleApp: App {
+    @StateObject private var authViewModel = AuthViewModel()
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(authViewModel)
         }
     }
 }
