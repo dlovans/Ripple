@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct AuthFieldsView: View {
-    var authType: AuthType
+    let authType: AuthType
     @State private var email = ""
     @State private var password = ""
+    
     var body: some View {
         VStack (spacing: 15) {
             HStack {
