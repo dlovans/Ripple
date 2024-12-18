@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CA811DE92D0F6959004BDAF0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CA811DE82D0F6959004BDAF0 /* FirebaseAnalytics */; };
+		CAAFDBD72D131EC700A84152 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CAAFDBD62D131EC700A84152 /* FirebaseAnalytics */; };
+		CAAFDBDA2D1321CD00A84152 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CAAFDBD92D1321CD00A84152 /* FirebaseAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +28,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA811DE92D0F6959004BDAF0 /* FirebaseAnalytics in Frameworks */,
+				CAAFDBD72D131EC700A84152 /* FirebaseAnalytics in Frameworks */,
+				CAAFDBDA2D1321CD00A84152 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +40,7 @@
 			isa = PBXGroup;
 			children = (
 				CA5771C22CED2D3B00F4F5BF /* Ripple */,
+				CAAFDBD82D1321CD00A84152 /* Frameworks */,
 				CA5771C12CED2D3B00F4F5BF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +51,13 @@
 				CA5771C02CED2D3B00F4F5BF /* Ripple.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CAAFDBD82D1321CD00A84152 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -70,7 +80,8 @@
 			);
 			name = Ripple;
 			packageProductDependencies = (
-				CA811DE82D0F6959004BDAF0 /* FirebaseAnalytics */,
+				CAAFDBD62D131EC700A84152 /* FirebaseAnalytics */,
+				CAAFDBD92D1321CD00A84152 /* FirebaseAuth */,
 			);
 			productName = Ripple;
 			productReference = CA5771C02CED2D3B00F4F5BF /* Ripple.app */;
@@ -101,7 +112,7 @@
 			mainGroup = CA5771B72CED2D3B00F4F5BF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				CA811DE72D0F6959004BDAF0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				CAAFDBD52D131EC700A84152 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CA5771C12CED2D3B00F4F5BF /* Products */;
@@ -274,7 +285,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.dlovan.Ripple;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.dlovan.ripple;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -303,7 +314,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.dlovan.Ripple;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.dlovan.ripple;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -335,7 +346,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CA811DE72D0F6959004BDAF0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+		CAAFDBD52D131EC700A84152 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
@@ -346,10 +357,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CA811DE82D0F6959004BDAF0 /* FirebaseAnalytics */ = {
+		CAAFDBD62D131EC700A84152 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CA811DE72D0F6959004BDAF0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			package = CAAFDBD52D131EC700A84152 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
+		};
+		CAAFDBD92D1321CD00A84152 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAAFDBD52D131EC700A84152 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
