@@ -11,6 +11,8 @@ struct AuthFieldsView: View {
     let authType: AuthType
     @State private var email = ""
     @State private var password = ""
+    @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     
     var body: some View {
         VStack (spacing: 15) {
@@ -48,7 +50,22 @@ struct AuthFieldsView: View {
             
             Button(
                 action: {
-                    print("Hello")
+                    if authType == .login {
+                        authViewModel.loginWithEmailAndPassword(email: self.email, password: self.password)
+                    } else {
+                        authViewModel.signupWithEmailAndPassword(email: self.email, password: self.password) { result in
+                            switch (result) {
+                            case .success(let authResult):
+                                Task {
+                                    await userViewModel.createUser(userId: authResult.user.uid)
+                                }
+                            case .failure:
+                                // Display UI error message.
+                                print("Failed to create user.")
+                            }
+                        }
+                    }
+
                 },
                 label: {
                     Text(authType == .login ? "Login" : "Register")
