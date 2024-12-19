@@ -6,10 +6,19 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
-struct ChatView: View {    
+struct ChatView: View {
     var body: some View {
         VStack {
+            // Temporary logout button.
+            Button("Logout") {
+                do {
+                    try Auth.auth().signOut()
+                } catch {
+                    print("Failed to logout")
+                }
+            }
             Text("Edingekroken")
                 .foregroundStyle(.white)
             ScrollView {
