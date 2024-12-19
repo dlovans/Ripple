@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
+    @EnvironmentObject private var userViewModel: UserViewModel
     var body: some View {
         ZStack {
             Color(.stone)
