@@ -31,6 +31,20 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    func signupWithEmailAndPassword(email: String, password: String, completion: @escaping (Result<AuthDataResult, Error>) -> Void) {
+        authRepository.signupWithEmailAndPassword(email: email, password: password) { result in
+            switch (result) {
+            case .success(let authResult):
+                print("Successfully signed up.")
+                completion(.success(authResult))
+            case .failure(let error):
+                print("Failed to sign up.")
+                print(error)
+                completion(.failure(error))
+            }
+        }
+    }
+    
     deinit {
         if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
