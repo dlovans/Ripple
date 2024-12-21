@@ -21,6 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct RippleApp: App {
     @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var userViewModel = UserViewModel()
+    @StateObject private var chatViewModel = ChatViewModel()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
@@ -29,6 +30,7 @@ struct RippleApp: App {
             ContentView()
                 .environmentObject(authViewModel)
                 .environmentObject(userViewModel)
+                .environmentObject(chatViewModel)
         }
     }
 }
