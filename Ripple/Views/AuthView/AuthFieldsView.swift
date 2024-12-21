@@ -51,7 +51,18 @@ struct AuthFieldsView: View {
             Button(
                 action: {
                     if authType == .login {
-                        authViewModel.loginWithEmailAndPassword(email: self.email, password: self.password)
+                        authViewModel.loginWithEmailAndPassword(email: self.email, password: self.password) { result in
+                            switch (result) {
+                            case .success(let authResult):
+                                Task {
+                                    await userViewModel.createUser(userId: authResult.user.uid)
+                                }
+                            case .failure:
+                                // Display UI error message.
+                                print("Failed to create user.")
+                            }
+                            
+                        }
                     } else {
                         authViewModel.signupWithEmailAndPassword(email: self.email, password: self.password) { result in
                             switch (result) {
@@ -77,6 +88,7 @@ struct AuthFieldsView: View {
                 }
             )
             .frame(maxWidth: .infinity)
+            .disabled(email.isEmpty && password.isEmpty)
         }
     }
 }
