@@ -20,13 +20,26 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func loginWithEmailAndPassword(email: String, password: String) {
+    func logout() -> Bool {
+        do {
+            try Auth.auth().signOut()
+            return true
+        } catch {
+            print("Failed to logout.")
+            print(error)
+            return false
+        }
+    }
+    
+    func loginWithEmailAndPassword(email: String, password: String, completion: @escaping (Result<AuthDataResult, Error>) -> Void) {
         authRepository.loginWithEmailAndPassword(email: email, password: password) { result in
             switch (result) {
-            case .success:
+            case .success(let authResult):
                 print("Successfully signed in.")
-            case .failure:
+                completion(.success(authResult))
+            case .failure(let error):
                 print("Failed to sign in.")
+                completion(.failure(error))
             }
         }
     }
