@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ChatFieldView: View {
+    @EnvironmentObject var chatViewModel: ChatViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     @State var chatText: String = ""
     @FocusState var displayKeyboard: Bool
     
@@ -26,11 +28,17 @@ struct ChatFieldView: View {
                 .keyboardType(.default)
             if !chatText.isEmpty {
                 Button {
-                    
+                    Task {
+                        if !chatText.isEmpty || chatViewModel.chat != nil {
+                            await chatViewModel.addMessage(message: chatText, username: userViewModel.user!.username, userId: userViewModel.user!.id, isPremium: userViewModel.user!.isPremium, chatId: chatViewModel.chat!.id)
+                            chatText = ""
+                        }
+                    }
                 } label: {
                     Image(systemName: "paperplane")
                         .foregroundStyle(.white)
                 }
+                .disabled(chatText.isEmpty || chatViewModel.chat == nil)
             }
         }
         .frame(maxWidth: .infinity)
