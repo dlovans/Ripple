@@ -20,6 +20,7 @@ class UserRepository {
             if document.exists, let data = document.data() {
                 if let username = data["username"] as? String,
                    let isPremium = data["isPremium"] as? Bool {
+                    print("Fetched user data.")
                     return User(id: userId, username: username, isPremium: isPremium)
                 } else {
                     print("Error: Missing or invalid fields in document.")
@@ -30,7 +31,8 @@ class UserRepository {
                     "username": "",
                     "isPremium": false
                 ])
-                
+                print("Created and fetched user data.")
+
                 return User(id: userId, username: "", isPremium: false)
             }
         } catch {
