@@ -9,20 +9,25 @@ import SwiftUI
 import FirebaseAuth
 
 struct ChatView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
+    @EnvironmentObject var chatViewModel: ChatViewModel
+    
     var body: some View {
         VStack {
             // Temporary logout button.
             Button("Logout") {
-                do {
-                    try Auth.auth().signOut()
-                } catch {
-                    print("Failed to logout")
+                let logoutStatus = authViewModel.logout()
+                if logoutStatus {
+                    userViewModel.destroyUserLocally()
                 }
             }
             Text("Edingekroken")
                 .foregroundStyle(.white)
             ScrollView {
                 LazyVStack {
+                    // ForEach. isMe = userViewModel?.user.id == message.userId
+                    
                     ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
                     ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
                     ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
