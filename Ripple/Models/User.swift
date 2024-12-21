@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Codable {
+struct User: Identifiable, Codable {
     var id: String
     var username: String
     var isPremium: Bool = false
