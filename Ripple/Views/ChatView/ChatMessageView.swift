@@ -19,7 +19,8 @@ struct ChatMessageView: View {
             Text(message)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
         .background(isMe ? Color.emerald : Color(red: 0.5, green: 0.5, blue: 0.5, opacity: 0.1))
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
