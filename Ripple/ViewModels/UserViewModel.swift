@@ -14,9 +14,9 @@ class UserViewModel: ObservableObject {
     let userRepository = UserRepository()
     
     init() {
-        if let user = Auth.auth().currentUser {
+        if let isUser = Auth.auth().currentUser {
             Task {
-                await self.createUser(userId: user.uid)
+                await self.createUser(userId: isUser.uid)
             }
         }
     }
@@ -26,5 +26,9 @@ class UserViewModel: ObservableObject {
         Task { @MainActor in
             self.user = newUser
         }
+    }
+    
+    func destroyUserLocally() {
+        self.user = nil
     }
 }
