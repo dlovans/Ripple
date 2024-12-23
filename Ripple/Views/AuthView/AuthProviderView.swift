@@ -22,7 +22,7 @@ struct AuthProviderView: View {
                     .frame(width: 30, height: 30)
                 
                 Text("\(authType == .login ? "Sign in with" : "Sign up with") \(authProvider)")
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textcolor)
                     .font(.headline)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

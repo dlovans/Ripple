@@ -18,9 +18,9 @@ struct AuthFieldsView: View {
         VStack (spacing: 15) {
             HStack {
                 Text("Email:")
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textcolor)
                 TextField("", text: $email)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textcolor)
                     .keyboardType(.emailAddress)
             }
             .padding()
@@ -34,9 +34,9 @@ struct AuthFieldsView: View {
             
             HStack {
                 Text("Password:")
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textcolor)
                 SecureField("", text: $password)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textcolor)
                     .keyboardType(.default)
             }
             .padding()
@@ -80,7 +80,7 @@ struct AuthFieldsView: View {
                 },
                 label: {
                     Text(authType == .login ? "Login" : "Register")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textcolor)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(.emerald)

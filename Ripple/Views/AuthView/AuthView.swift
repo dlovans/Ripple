@@ -23,10 +23,10 @@ struct AuthView: View {
                 VStack (alignment: .leading) {
                     Text(authType == .login ? "Welcome Back!" : "Get started with Ripple!")
                         .font(.title)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textcolor)
                     Text(authType == .login ? "Login to start chatting." : "Join and start chatting.")
                         .font(.title2)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textcolor)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer()
