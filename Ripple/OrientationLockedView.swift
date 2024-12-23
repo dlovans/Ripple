@@ -16,5 +16,7 @@ struct OrientationLockedView: View {
             .onDisappear {
                 AppDelegate.orientationLock = .all
             }
+            .preferredColorScheme(.light)
+
     }
 }
