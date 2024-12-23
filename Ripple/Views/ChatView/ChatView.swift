@@ -14,34 +14,28 @@ struct ChatView: View {
     @EnvironmentObject var chatViewModel: ChatViewModel
     
     var body: some View {
-        VStack {
-            // Temporary logout button.
-            Button("Logout") {
-                let logoutStatus = authViewModel.logout()
-                if logoutStatus {
-                    userViewModel.destroyUserLocally()
+        ZStack {
+            Color.stone
+                .ignoresSafeArea()
+            VStack {
+                Text("Edingekroken")
+                    .foregroundStyle(.textcolor)
+                ScrollView {
+                    LazyVStack {
+                        // ForEach. isMe = userViewModel?.user.id == message.userId
+                        
+                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
+                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
+                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
+                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
+                        ChatMessageView(username: "Pablito", message: "Whasfffgoin on", isMe: true)
+                    }
                 }
+                .defaultScrollAnchor(.bottom)
+                .scrollIndicators(.hidden)
+                ChatFieldView()
             }
-            Text("Edingekroken")
-                .foregroundStyle(.white)
-            ScrollView {
-                LazyVStack {
-                    // ForEach. isMe = userViewModel?.user.id == message.userId
-                    
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                    ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                    ChatMessageView(username: "Pablito", message: "Whasfffgoin on", isMe: true)
-                }
-            }
-            .defaultScrollAnchor(.bottom)
-            .scrollIndicators(.hidden)
-            ChatFieldView()
+            .padding()
         }
     }
 }
