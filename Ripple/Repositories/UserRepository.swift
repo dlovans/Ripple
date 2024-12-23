@@ -40,5 +40,13 @@ class UserRepository {
             return nil
         }
     }
-
+    
+    func updateUsername(userId: String, username: String) async throws {
+        let docRef = db.collection("users").document(userId)
+        
+        try await docRef.updateData([
+            "username": username
+        ])
+    }
+    
 }
