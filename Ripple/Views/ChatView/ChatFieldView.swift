@@ -15,17 +15,24 @@ struct ChatFieldView: View {
     
     var body: some View {
         HStack {
-            TextField("Type something...", text: $chatText)
-                .foregroundStyle(.white)
+            TextField("Type something...", text: $chatText, axis: .vertical)
+                .foregroundStyle(.textcolor)
                 .overlay(alignment: .leading) {
                     if chatText.isEmpty {
-                        Text("Type something...")
-                            .foregroundStyle(.white)
+                        Text("@\(userViewModel.user?.username ?? "")")
+                            .foregroundStyle(.textcolor)
+                            .opacity(0.5)
                             .padding(.leading, 4)
                             .allowsHitTesting(false)
                     }
                 }
+                .lineLimit(0...10)
                 .keyboardType(.default)
+                .onChange (of: chatText) {
+                    if chatText.count > 200 {
+                        chatText = String(chatText.prefix(200))
+                    }
+                }
             if !chatText.isEmpty {
                 Button {
                     Task {
@@ -36,7 +43,7 @@ struct ChatFieldView: View {
                     }
                 } label: {
                     Image(systemName: "paperplane")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textcolor)
                 }
                 .disabled(chatText.isEmpty || chatViewModel.chat == nil)
             }
