@@ -6,20 +6,25 @@
 //
 
 import Foundation
+import CoreLocation
 
 class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
-    @Published var chat: Chat? = nil
+    @Published var chat: Chat?
+    @Published var chats: [Chat]?
     
-    let chatRepository: ChatRepository = ChatRepository()
+    private let chatRepository: ChatRepository = ChatRepository()
     
-    func addMessage(message: String, username: String, userId: String, isPremium: Bool, chatId: String) async {
-        let messageStatus = await chatRepository.createMessage(message: message, username: username, userId: userId, isPremium: isPremium, chatId: chatId)
+    func createChat(chatName: String, zoneSize: ZoneSize, location: CLLocationCoordinate2D, maxConnections: Int) async -> Bool {
+        let createdChat = await chatRepository.createChat(chatName: chatName, zoneSize: zoneSize, location: location, maxConnections: maxConnections)
         
-        if messageStatus {
-            print("Successfully created a new message in DB.")
+        if let createdChat = createdChat {
+            await MainActor.run {
+                self.chat = createdChat
+            }
+            return true
         } else {
-            print("Failed to create a new message in DB.")
+            return false
         }
     }
 }
