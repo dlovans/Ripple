@@ -27,7 +27,7 @@ struct MenuView: View {
                             Text("Events coming soon!")
                                 .foregroundStyle(.textcolor)
                         } else if selection == 1 {
-                            StartPromptView()
+                            ChatSelectionView()
                         } else if selection == 2 {
                             SettingsView()
                         }
