@@ -9,6 +9,6 @@ import Foundation
 
 struct Chat: Identifiable, Codable {
     var id: String
-    var chatName: String = "Abyss"
+    var chatName: String
     var connections: Int
 }
