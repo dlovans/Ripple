@@ -15,7 +15,8 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
     @Published var localizedEvents: [Event] = []
     @Published var isLoading: Bool = true
     
-    private var locationRepository: LocationRepository = LocationRepository()
+    private var chatRepository: ChatRepository = ChatRepository()
+    
     private var queryTimer: Timer?
     private var manager = CLLocationManager()
     
@@ -41,19 +42,21 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
     func getDataByLocation(locationMode: LocationMode) async {
         switch locationMode {
         case .events:
-            if let location = self.lastKnownLocation {
-                let events = await self.locationRepository.getEvents(location: location)
-                await MainActor.run {
-                    self.localizedEvents = events
-                }
-            }
+//            if let location = self.lastKnownLocation {
+//                let events = await self.chatRepository.getEvents(location: location)
+//                await MainActor.run {
+//                    self.localizedEvents = events
+//                }
+//            }
+            print("Event test")
         case .chats:
-            if let location = self.lastKnownLocation {
-                let chats =  await self.locationRepository.getChats(location: location)
-                await MainActor.run {
-                    self.localizedChats = chats
-                }
-            }
+//            if let location = self.lastKnownLocation {
+//                let chats =  await self.chatRepository.getChats(location: location)
+//                await MainActor.run {
+//                    self.localizedChats = chats
+//                }
+//            }
+            print("Chat test")
         }
     }
     
