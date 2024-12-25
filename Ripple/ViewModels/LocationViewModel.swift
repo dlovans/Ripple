@@ -57,10 +57,9 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
         }
     }
     
-    func startPeriodicLocationTask(locationMode: LocationMode, intervalInSeconds: Double) {
+    func startPeriodicLocationTask(locationMode: LocationMode) {
         queryTimer?.invalidate()
-        manager.startUpdatingLocation()
-        queryTimer = Timer.scheduledTimer(withTimeInterval: intervalInSeconds, repeats: true) { [weak self] _ in
+        queryTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             self?.manager.requestLocation()
             Task { @MainActor in
                 await self?.getDataByLocation(locationMode: locationMode)
@@ -74,7 +73,6 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
     func stopPeriodicLocationTask () {
         queryTimer?.invalidate()
         queryTimer = nil
-        self.isLoading = true
     }
         
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -88,7 +86,7 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         lastKnownLocation = locations.first?.coordinate
     }
-    
+        
     deinit {
         self.stopPeriodicLocationTask()
     }
