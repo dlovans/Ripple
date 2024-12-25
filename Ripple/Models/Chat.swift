@@ -8,7 +8,12 @@
 import Foundation
 
 struct Chat: Identifiable, Codable {
-    var id: String
-    var chatName: String
-    var connections: Int
+    let id: String
+    let chatName: String
+    let connections: Int
+    let maxConnections: Int
+    let longStart: Double
+    let longEnd: Double
+    let latStart: Double
+    let latEnd: Double
 }
