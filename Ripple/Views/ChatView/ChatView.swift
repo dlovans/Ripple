@@ -13,6 +13,8 @@ struct ChatView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var chatViewModel: ChatViewModel
     
+    @Binding var navigateToChat: Bool
+    
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -45,18 +47,6 @@ struct ChatView: View {
                         ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
                         ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
                         ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whasfffgoin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whasfffgoin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whasfffgoin on", isMe: true)
                     }
                 }
                 .defaultScrollAnchor(.bottom)
@@ -65,9 +55,8 @@ struct ChatView: View {
             }
             .padding()
         }
+        .onDisappear {
+            navigateToChat = false
+        }
     }
-}
-
-#Preview {
-    ChatView()
 }
