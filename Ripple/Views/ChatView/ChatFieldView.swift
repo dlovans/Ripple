@@ -10,6 +10,8 @@ import SwiftUI
 struct ChatFieldView: View {
     @EnvironmentObject var chatViewModel: ChatViewModel
     @EnvironmentObject var userViewModel: UserViewModel
+    @EnvironmentObject var messageViewModel: MessageViewModel
+    
     @State var chatText: String = ""
     @FocusState var displayKeyboard: Bool
     
@@ -37,7 +39,7 @@ struct ChatFieldView: View {
                 Button {
                     Task {
                         if !chatText.isEmpty || chatViewModel.chat != nil {
-                            await chatViewModel.addMessage(message: chatText, username: userViewModel.user!.username, userId: userViewModel.user!.id, isPremium: userViewModel.user!.isPremium, chatId: chatViewModel.chat!.id)
+                            await messageViewModel.addMessage(message: chatText, username: userViewModel.user!.username, userId: userViewModel.user!.id, isPremium: userViewModel.user!.isPremium, chatId: chatViewModel.chat!.id)
                             chatText = ""
                         }
                     }
