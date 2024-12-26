@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChatSelectionView: View {
     @EnvironmentObject var chatViewModel: ChatViewModel
-    @EnvironmentObject var locationViewModel: LocationViewModel
+    @EnvironmentObject var locationService: LocationService
     @State private var displayCreateChat: Bool = false
     @State private var createChatTitle: String = ""
     @State private var navigateToChat: Bool = false
@@ -54,18 +54,23 @@ struct ChatSelectionView: View {
                 }
             }
             .onAppear {
-                locationViewModel.startPeriodicLocationTask()
-                chatViewModel.getChats()
+                locationService.startPeriodicLocationTask()
+                Task { @MainActor in
+                    chatViewModel.startFetchingChats(center: locationService.lastKnownLocation ?? nil)
+                }
                 print("created")
             }
             .onDisappear {
-                locationViewModel.stopPeriodicLocationTask()
+                locationService.stopPeriodicLocationTask()
+                chatViewModel.stopFetchingChats()
                 print("destroyed1111")
             }
-            .onChange(of: locationViewModel.lastKnownLocation) { oldValue, newValue in
+            .onChange(of: locationService.lastKnownLocation) { oldValue, newValue in
                 if oldValue != newValue {
                     print("location changed")
-                    chatViewModel.getChats()
+                    Task { @MainActor in
+                        chatViewModel.startFetchingChats(center: locationService.lastKnownLocation ?? nil)
+                    }
                 }
             }
         }
