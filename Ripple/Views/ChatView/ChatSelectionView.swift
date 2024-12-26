@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ChatSelectionView: View {
+    @EnvironmentObject var chatViewModel: ChatViewModel
     @EnvironmentObject var locationViewModel: LocationViewModel
     @State private var displayCreateChat: Bool = false
     @State private var createChatTitle: String = ""
@@ -32,12 +33,12 @@ struct ChatSelectionView: View {
                             ChatCreateView(navigateToChat: $navigateToChat, isPresented: $displayCreateChat)
                         }
                     }
-                    if locationViewModel.isLoading {
+                    if chatViewModel.isLoading {
                         SpinnerView()
                     } else {
                         ScrollView {
                             LazyVStack {
-                                ForEach(locationViewModel.localizedChats) {chatItem in
+                                ForEach(chatViewModel.localizedChats) {chatItem in
                                     Text(chatItem.chatName)
                                         .foregroundStyle(.textcolor)
                                 }
@@ -49,13 +50,23 @@ struct ChatSelectionView: View {
                 .padding()
                 .navigationDestination(isPresented: $navigateToChat) {
                     ChatView(navigateToChat: $navigateToChat)
+                        .navigationBarBackButtonHidden(true)
                 }
             }
             .onAppear {
-                locationViewModel.startPeriodicLocationTask(locationMode: .chats)
+                locationViewModel.startPeriodicLocationTask()
+                chatViewModel.getChats()
+                print("created")
             }
             .onDisappear {
                 locationViewModel.stopPeriodicLocationTask()
+                print("destroyed1111")
+            }
+            .onChange(of: locationViewModel.lastKnownLocation) { oldValue, newValue in
+                if oldValue != newValue {
+                    print("location changed")
+                    chatViewModel.getChats()
+                }
             }
         }
     }
