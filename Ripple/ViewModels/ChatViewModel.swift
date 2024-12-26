@@ -12,10 +12,25 @@ class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var chat: Chat?
     @Published var chats: [Chat]?
+    @Published var localizedChats: [Chat] = []
+    @Published var isLoading: Bool = false
     
     private let chatRepository: ChatRepository = ChatRepository()
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: CLLocationCoordinate2D, maxConnections: Int) async -> Bool {
+    func getChats() {
+        isLoading = true
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) { [weak self] in
+            DispatchQueue.main.async {
+                self?.localizedChats = []
+                self?.isLoading = false
+            }
+        }
+    }
+
+
+    
+    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> Bool {
         let createdChat = await chatRepository.createChat(chatName: chatName, zoneSize: zoneSize, location: location, maxConnections: maxConnections)
         
         if let createdChat = createdChat {
