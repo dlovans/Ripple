@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct ChatCreateView: View {
-    @EnvironmentObject var locationViewModel: LocationViewModel
+    @EnvironmentObject var locationService: LocationService
     @EnvironmentObject var chatViewModel: ChatViewModel
     @Binding var navigateToChat: Bool
     
     @State private var createChatTitle: String = ""
     @State private var zoneSize: Int = 1
     @State private var maxUsers: Int = 1
+    @State private var disableButtons: Bool = false
     
     private var zoneSizeConstant: ZoneSize {
         switch self.zoneSize {
@@ -114,45 +115,69 @@ struct ChatCreateView: View {
                     
                     HStack {
                         Button {
+                            disableButtons = true
                             Task {
+                                await MainActor.run {
+                                    disableButtons = true
+                                }
+                                
                                 let newChat = await chatViewModel.createChat(
                                     chatName: createChatTitle,
                                     zoneSize: zoneSizeConstant,
-                                    location: locationViewModel.lastKnownLocation!,
-                                    maxConnections: maxUsers
+                                    location: locationService.lastKnownLocation!,
+                                    maxConnections: maxConnections
                                 )
                                 
-                                if newChat {
-                                    isPresented.toggle()
-                                    navigateToChat = true
+                                await MainActor.run {
+                                    if newChat {
+                                        navigateToChat = true
+                                        isPresented.toggle()
+                                    } else {
+                                        disableButtons = false
+                                        return
+                                    }
                                 }
                             }
                         } label: {
                             Text("Create")
                                 .foregroundStyle(.textcolor)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(createChatTitle.isEmpty || disableButtons ? Color.gray : .emerald)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
-                        .frame(maxWidth: .infinity)
+                        .disabled(createChatTitle.isEmpty || disableButtons)
                         .padding()
-                        .background(createChatTitle.isEmpty ? Color.gray : .emerald)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .disabled(createChatTitle.isEmpty)
                         
                         Button {
                             isPresented.toggle()
                         } label: {
                             Text("Cancel")
                                 .foregroundStyle(.textcolor)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(disableButtons ? Color.gray : .red)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
-                        .frame(maxWidth: .infinity)
+                        .disabled(disableButtons)
                         .padding()
-                        .background(Color.red)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
                 }
             }
             .padding()
             .frame(maxHeight: .infinity, alignment: .top)
             .padding()
+            
+            if disableButtons {
+                ZStack {
+                    SpinnerView()
+                    Text("Creating chat...Hang tight!")
+                        .frame(maxHeight: .infinity, alignment: .top)
+                        .padding(.top, 50)
+                        .font(.headline)
+                        .foregroundStyle(.textcolor)
+                }
+            }
         }
     }
 }
