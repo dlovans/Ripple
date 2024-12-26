@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct MenuView: View {
-    @EnvironmentObject var locationViewModel: LocationViewModel
+    @EnvironmentObject var locationService: LocationService
     @State private var selection: Int = 1
     
     var locationEnabled: Bool {
-        locationViewModel.locationAuthorized == .authorizedAlways || locationViewModel.locationAuthorized == .authorizedWhenInUse
+        locationService.locationAuthorized == .authorizedAlways || locationService.locationAuthorized == .authorizedWhenInUse
     }
     
     var body: some View {
@@ -51,13 +51,13 @@ struct MenuView: View {
             }
         }
         .onAppear {
-            if locationViewModel.locationAuthorized == .denied || locationViewModel.locationAuthorized == .restricted {
+            if locationService.locationAuthorized == .denied || locationService.locationAuthorized == .restricted {
                 selection = 2
             } else {
                 selection = 1
             }
         }
-        .onChange(of: locationViewModel.locationAuthorized, { _, newValue in
+        .onChange(of: locationService.locationAuthorized, { _, newValue in
             if newValue == .denied || newValue == .restricted {
                 selection = 2
             } else {
