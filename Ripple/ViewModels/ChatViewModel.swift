@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import FirebaseFirestore
 
 class ChatViewModel: ObservableObject {
     @Published var messages: [Message] = []
@@ -16,18 +17,26 @@ class ChatViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     
     private let chatRepository: ChatRepository = ChatRepository()
+    private var chatListener: ListenerRegistration?
     
-    func getChats() {
-        isLoading = true
+    func startFetchingChats(center: Coordinate?) {
+        guard let center else {
+            print("No location provided.")
+            return
+        }
+            stopFetchingChats()
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1) { [weak self] in
-            DispatchQueue.main.async {
-                self?.localizedChats = []
-                self?.isLoading = false
+        chatListener = chatRepository.fetchChats(center: center) { [weak self] chats in
+                Task { @MainActor in
+                    self?.localizedChats = chats
+                }
             }
         }
-    }
 
+        func stopFetchingChats() {
+            chatListener?.remove()
+            chatListener = nil
+        }
 
     
     func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> Bool {
