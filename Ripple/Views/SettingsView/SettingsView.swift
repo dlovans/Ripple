@@ -10,10 +10,10 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var userViewModel: UserViewModel
-    @EnvironmentObject var locationViewModel: LocationViewModel
+    @EnvironmentObject var locationService: LocationService
     
     var locationEnabled: Bool {
-        locationViewModel.locationAuthorized == .authorizedAlways || locationViewModel.locationAuthorized == .authorizedWhenInUse
+        locationService.locationAuthorized == .authorizedAlways || locationService.locationAuthorized == .authorizedWhenInUse
     }
     
     @State var username: String = ""
