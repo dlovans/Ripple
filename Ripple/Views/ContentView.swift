@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
-    @EnvironmentObject private var locationViewModel: LocationViewModel
     
     var body: some View {
             if authViewModel.isLoading || userViewModel.isLoading {
