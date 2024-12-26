@@ -10,13 +10,8 @@ import CoreLocation
 
 class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
     @Published var locationAuthorized: CLAuthorizationStatus = .notDetermined
-    @Published var lastKnownLocation: CLLocationCoordinate2D?
-    @Published var localizedChats: [Chat] = []
-    @Published var localizedEvents: [Event] = []
-    @Published var isLoading: Bool = true
-    
-    private var chatRepository: ChatRepository = ChatRepository()
-    
+    @Published var lastKnownLocation: Coordinate?
+        
     private var queryTimer: Timer?
     private var manager = CLLocationManager()
     
@@ -39,35 +34,10 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
         }
     }
     
-    func getDataByLocation(locationMode: LocationMode) async {
-        switch locationMode {
-        case .events:
-//            if let location = self.lastKnownLocation {
-//                let events = await self.chatRepository.getEvents(location: location)
-//                await MainActor.run {
-//                    self.localizedEvents = events
-//                }
-//            }
-            print("Event test")
-        case .chats:
-//            if let location = self.lastKnownLocation {
-//                let chats =  await self.chatRepository.getChats(location: location)
-//                await MainActor.run {
-//                    self.localizedChats = chats
-//                }
-//            }
-            print("Chat test")
-        }
-    }
-    
-    func startPeriodicLocationTask(locationMode: LocationMode) {
+    func startPeriodicLocationTask() {
         queryTimer?.invalidate()
-        queryTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+        queryTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
             self?.manager.requestLocation()
-            Task { @MainActor in
-                await self?.getDataByLocation(locationMode: locationMode)
-                self?.isLoading = false
-            }
         }
         queryTimer?.fire()
     }
@@ -87,7 +57,10 @@ class LocationViewModel: NSObject, CLLocationManagerDelegate, ObservableObject {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        lastKnownLocation = locations.first?.coordinate
+        if let lastLocation = locations.last {
+            lastKnownLocation = Coordinate(latitude: lastLocation.coordinate.latitude,
+                                           longitude: lastLocation.coordinate.longitude)
+        }
     }
         
     deinit {
