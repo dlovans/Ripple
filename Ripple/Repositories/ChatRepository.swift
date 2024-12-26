@@ -12,7 +12,7 @@ import CoreLocation
 class ChatRepository {
     let db = Firestore.firestore()
         
-    func createChat(chatName: String, zoneSize: ZoneSize, location: CLLocationCoordinate2D, maxConnections: Int) async -> Chat? {
+    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> Chat? {
         let geoData = calculateBoundingBox(center: location, zoneSize: zoneSize)
         let chatData: [String: Any] = [
             "name": chatName,
@@ -61,7 +61,7 @@ class ChatRepository {
         }
     }
     
-    func calculateBoundingBox(center: CLLocationCoordinate2D, zoneSize: ZoneSize) -> (latStart: Double, latEnd: Double, longStart: Double, longEnd: Double) {
+    func calculateBoundingBox(center: Coordinate, zoneSize: ZoneSize) -> (latStart: Double, latEnd: Double, longStart: Double, longEnd: Double) {
         let distance: Double
         switch zoneSize {
         case .small:
