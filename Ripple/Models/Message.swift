@@ -7,11 +7,10 @@
 
 import Foundation
 
-struct Message: Identifiable, Codable {
+struct Message: Identifiable, Codable, Equatable {
     let id: String?
     let userId: String
     let username: String
     let message: String
-    let isMe: Bool
     let isPremium: Bool
 }
