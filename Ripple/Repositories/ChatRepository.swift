@@ -12,11 +12,56 @@ import CoreLocation
 class ChatRepository {
     let db = Firestore.firestore()
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> Chat? {
+    func fetchChat(chatId: String, onUpdate: @escaping (Chat?) -> Void) -> ListenerRegistration? {
+        let listener = db.collection("chats").document(chatId).addSnapshotListener { querySnapshot, error in
+            if let error = error {
+                print("Failed listening to chat: \(error.localizedDescription)")
+                onUpdate(nil)
+                return
+            }
+            
+            guard let querySnapshot = querySnapshot else {
+                print("Error fetching chat snapshot: Snapshot is nil.")
+                onUpdate(nil)
+                return
+            }
+            
+            guard let data = querySnapshot.data() else {
+                print("No data found for chat with ID: \(chatId)")
+                onUpdate(nil)
+                return
+            }
+            
+            let chat = Chat(
+                id: querySnapshot.documentID,
+                chatName: data["chatName"] as? String ?? "Unnamed Chat",
+                connections: data["connections"] as? Int ?? 1,
+                maxConnections: data["maxConnections"] as? Int ?? 100,
+                longStart: data["longStart"] as? Double ?? 0.0,
+                longEnd: data["longEnd"] as? Double ?? 0.0,
+                latStart: data["latStart"] as? Double ?? 0.0,
+                latEnd: data["latEnd"] as? Double ?? 0.0
+            )
+            
+            onUpdate(chat)
+        }
+        return listener
+    }
+    
+    func incrementConnection(chatId: String) async throws {
+        try await db.collection("chats").document(chatId).updateData(["connections": FieldValue.increment(Int64(1))])
+    }
+    
+    func decrementConnection(chatId: String) async throws {
+        try await db.collection("chats").document(chatId).updateData(["connections": FieldValue.increment(-Int64(1))])
+    }
+    
+    
+    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> String? {
         let geoData = calculateBoundingBox(center: location, zoneSize: zoneSize)
         let chatData: [String: Any] = [
             "chatName": chatName,
-            "connections": 1,
+            "connections": 0,
             "maxConnections": maxConnections,
             "timestamp": FieldValue.serverTimestamp(),
             "longStart": geoData.longStart,
@@ -45,16 +90,7 @@ class ChatRepository {
                 "isPremium": true
             ])
             
-            return Chat(
-                id: chatRef.documentID,
-                chatName: chatName,
-                connections: 1,
-                maxConnections: maxConnections,
-                longStart: geoData.longStart,
-                longEnd: geoData.longEnd,
-                latStart: geoData.latStart,
-                latEnd: geoData.latEnd
-            )
+            return chatRef.documentID
         } catch {
             print("Failed creating chat.")
             return nil
@@ -63,25 +99,32 @@ class ChatRepository {
     
     func fetchChats(center: Coordinate, onUpdate: @escaping ([Chat]) -> Void) -> ListenerRegistration? {
         let geoData = calculateBoundingBox(center: center, zoneSize: .medium)
-
+        print(geoData.latStart)
+        print(geoData.latEnd)
+        print(geoData.longStart)
+        print(geoData.longEnd)
+        print("test chats")
+        
         let listener = db.collection("chats")
-            .whereField("longStart", isGreaterThanOrEqualTo: geoData.longStart)
-            .whereField("longEnd", isLessThanOrEqualTo: geoData.longEnd)
-            .whereField("latStart", isGreaterThanOrEqualTo: geoData.latStart)
-            .whereField("latEnd", isLessThanOrEqualTo: geoData.latEnd)
+            .whereField("longStart", isLessThanOrEqualTo: center.longitude)
+            .whereField("longEnd", isGreaterThanOrEqualTo: center.longitude)
+            .whereField("latStart", isLessThanOrEqualTo: center.latitude)
+            .whereField("latEnd", isGreaterThanOrEqualTo: center.latitude)
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("Error listening to chats: \(error.localizedDescription)")
                     onUpdate([])
                     return
                 }
-
+                
                 guard let querySnapshot = querySnapshot else {
+                    print("Empty chat snapshot.")
                     onUpdate([])
                     return
                 }
-
+                
                 var chats: [Chat] = []
+                
                 for document in querySnapshot.documents {
                     let chatName = document.data()["chatName"] as? String ?? "Unknown Chat"
                     let connections = document.data()["connections"] as? Int ?? 0
@@ -90,7 +133,7 @@ class ChatRepository {
                     let longEnd = document.data()["longEnd"] as? Double ?? 0.0
                     let latStart = document.data()["latStart"] as? Double ?? 0.0
                     let latEnd = document.data()["latEnd"] as? Double ?? 0.0
-
+                    
                     let chat = Chat(
                         id: document.documentID,
                         chatName: chatName,
@@ -101,38 +144,13 @@ class ChatRepository {
                         latStart: latStart,
                         latEnd: latEnd
                     )
+                    
                     chats.append(chat)
                 }
-
+                
                 onUpdate(chats)
             }
-
+        
         return listener
-    }
-
-
-    
-    func calculateBoundingBox(center: Coordinate, zoneSize: ZoneSize) -> (latStart: Double, latEnd: Double, longStart: Double, longEnd: Double) {
-        let distance: Double
-        switch zoneSize {
-        case .small:
-            distance = 3.0
-        case .medium:
-            distance = 5.0
-        case .large:
-            distance = 10.0
-        case .extraLarge:
-            distance = 15.0
-        }
-        
-        let deltaLat = distance / 111.0
-        let deltaLong = distance / (111.0 * cos(center.latitude * .pi / 180.0))
-        
-        let latStart = center.latitude - deltaLat
-        let latEnd = center.latitude + deltaLat
-        let longStart = center.longitude - deltaLong
-        let longEnd = center.longitude + deltaLong
-        
-        return (latStart, latEnd, longStart, longEnd)
     }
 }
