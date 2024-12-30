@@ -12,51 +12,60 @@ struct ChatView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var chatViewModel: ChatViewModel
+    @EnvironmentObject var messageViewModel: MessageViewModel
     
     @Binding var navigateToChat: Bool
+    
+    @State private var chatId: String = ""
+    @State private var autoScroll: Bool = true
     
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack {
-            Color.stone
-                .ignoresSafeArea()
-            VStack {
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "arrow.left")
-                            .foregroundStyle(.emerald)
+            if chatViewModel.chatIsLoading {
+                SpinnerView()
+            } else {
+                Color.stone
+                    .ignoresSafeArea()
+                VStack {
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "arrow.left")
+                                .foregroundStyle(.emerald)
+                        }
+                        .frame(width: 80, alignment: .leading)
+                        Spacer()
+                        Text(chatViewModel.chat?.chatName ?? "Unknown")
+                            .frame(maxWidth: .infinity)
+                        Spacer()
+                        Text("\(chatViewModel.chat?.connections ?? 0)/\(chatViewModel.chat?.maxConnections ?? 100)")
+                            .foregroundStyle(.textcolor)
+                            .frame(width: 80, alignment: .trailing)
                     }
-                    Spacer()
-
-                    Text("Connections: \(chatViewModel.chat?.connections ?? 1)")
-                        .foregroundStyle(.textcolor)
+                    .padding(5)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    ChatScrollView()
+                    ChatFieldView()
                 }
                 .padding()
-                ScrollView {
-                    LazyVStack {
-                        // ForEach. isMe = userViewModel?.user.id == message.userId
-                        
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whasfffgoin on", isMe: true)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: false)
-                        ChatMessageView(username: "Pablito", message: "Whas goin on", isMe: true)
+                .onAppear {
+                    chatId = chatViewModel.chat?.id ?? ""
+                    Task {
+                        await chatViewModel.incrementConnection(for: chatViewModel.chat?.id ?? "")
                     }
                 }
-                .defaultScrollAnchor(.bottom)
-                .scrollIndicators(.hidden)
-                ChatFieldView()
+                .onDisappear {
+                        messageViewModel.unsubscribeFromMessages()
+                        chatViewModel.stopListeningToChat()
+                        Task {
+                            await chatViewModel.decrementConnection(for: chatViewModel.chat?.id ?? "")
+                        }
+                        navigateToChat = false
+                    }
             }
-            .padding()
-        }
-        .onDisappear {
-            navigateToChat = false
         }
     }
 }
