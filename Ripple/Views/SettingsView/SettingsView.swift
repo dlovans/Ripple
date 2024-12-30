@@ -11,6 +11,7 @@ struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var locationService: LocationService
+    @FocusState private var usernameIsFocused: Bool
     
     var locationEnabled: Bool {
         locationService.locationAuthorized == .authorizedAlways || locationService.locationAuthorized == .authorizedWhenInUse
@@ -27,9 +28,10 @@ struct SettingsView: View {
                     Text("Settings")
                         .font(.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .foregroundStyle(.textcolor)
                     ScrollView {
                         VStack {
-                            UsernameView(newUser: false)
+                            UsernameView(usernameIsFocused: $usernameIsFocused)
                         }
                         Divider()
                             .overlay(.white)
@@ -48,9 +50,9 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color.red)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .padding()
                     }
                     .scrollIndicators(.hidden)
+                    .scrollDismissesKeyboard(.interactively)
                 } else {
                     Button{
                         if let appSettings = URL(string: UIApplication.openSettingsURLString) {
@@ -69,7 +71,15 @@ struct SettingsView: View {
             }
             .frame(alignment: locationEnabled ? .top : .center)
             .padding()
-
+            .onTapGesture {
+                if locationEnabled && usernameIsFocused {
+                    usernameIsFocused = false
+                }
+            }
+            
+            if !userViewModel.userLoaded {
+                SpinnerView()
+            }
         }
     }
 }
