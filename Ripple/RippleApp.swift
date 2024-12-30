@@ -19,6 +19,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         return true
     }
+    
+//    func applicationWillTerminate(_ application: UIApplication) {
+//        chatViewModel.decrementConnection(for: chatViewModel.chat.id)
+//        chatViewModel.stopListeningToChat()
+//    }
 }
 
 @main
