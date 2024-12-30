@@ -12,25 +12,25 @@ struct ContentView: View {
     @EnvironmentObject private var userViewModel: UserViewModel
     
     var body: some View {
-            if authViewModel.isLoading || userViewModel.isLoading {
-                SpinnerView()
-            } else {
-                VStack {
-                    if authViewModel.isAuthenticated {
-                        if userViewModel.userLoaded {
-                            if let username = userViewModel.user?.username, !username.isEmpty {
-                                MenuView()
-                            } else {
-                                UsernameView()
-                            }
+        if authViewModel.isLoading || userViewModel.isLoading {
+            SpinnerView()
+        } else {
+            VStack {
+                if authViewModel.isAuthenticated {
+                    if userViewModel.userLoaded {
+                        if let username = userViewModel.user?.username, !username.isEmpty {
+                            MenuView()
                         } else {
-                            SpinnerView()
+                            NewUserView()
                         }
                     } else {
-                        AuthView(authType: .login)
+                        SpinnerView()
                     }
+                } else {
+                    AuthView(authType: .login)
                 }
             }
+        }
     }
 }
 
@@ -39,12 +39,12 @@ extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = self
     }
-
+    
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return viewControllers.count > 1
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}
