@@ -11,6 +11,7 @@ import CoreLocation
 class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
     @Published var locationAuthorized: CLAuthorizationStatus = .notDetermined
     @Published var lastKnownLocation: Coordinate?
+    @Published var isLoading: Bool = true
         
     private var queryTimer: Timer?
     private var manager = CLLocationManager()
@@ -19,6 +20,7 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
         super.init()
         manager.delegate = self
         self.locationAuthorized = manager.authorizationStatus
+        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
     }
     
     func checkLocationAuthorization() {
@@ -34,18 +36,22 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
         }
     }
     
+    func requestLocation() {
+        manager.requestLocation()
+    }
+    
     func startPeriodicLocationTask() {
         queryTimer?.invalidate()
-        queryTimer = Timer.scheduledTimer(withTimeInterval: 90, repeats: true) { [weak self] _ in
+        manager.requestLocation()
+        queryTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
             self?.manager.requestLocation()
         }
-        queryTimer?.fire()
     }
 
-    
     func stopPeriodicLocationTask () {
         queryTimer?.invalidate()
         queryTimer = nil
+        self.manager.stopUpdatingLocation()
     }
         
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -61,6 +67,8 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
             lastKnownLocation = Coordinate(latitude: lastLocation.coordinate.latitude,
                                            longitude: lastLocation.coordinate.longitude)
         }
+        isLoading = false
+        print("Location updated.")
     }
         
     deinit {
