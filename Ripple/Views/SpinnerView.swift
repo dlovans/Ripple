@@ -16,7 +16,6 @@ struct SpinnerView: View {
               .progressViewStyle(CircularProgressViewStyle(tint: .emerald))
               .scaleEffect(2.0, anchor: .center)
         }
-
     }
 }
 
