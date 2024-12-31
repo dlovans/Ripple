@@ -54,16 +54,16 @@ struct ChatView: View {
                 .onAppear {
                     chatId = chatViewModel.chat?.id ?? ""
                     Task {
-                        await chatViewModel.incrementConnection(for: chatViewModel.chat?.id ?? "")
+                        await chatViewModel.incrementConnection()
                     }
                 }
                 .onDisappear {
-                        messageViewModel.unsubscribeFromMessages()
-                        chatViewModel.stopListeningToChat()
-                        Task {
-                            await chatViewModel.decrementConnection(for: chatViewModel.chat?.id ?? "")
+                        Task { @MainActor in
+                            navigateToChat = false
+                            await chatViewModel.decrementConnection()
+                            messageViewModel.unsubscribeFromMessages()
+                            chatViewModel.stopListeningToChat()
                         }
-                        navigateToChat = false
                     }
             }
         }
