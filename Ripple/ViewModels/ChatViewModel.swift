@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 import FirebaseFirestore
 
-class ChatViewModel: ObservableObject {
+class ChatViewModel: ObservableObject {    
     @Published var messages: [Message] = []
     @Published var chat: Chat?
     @Published var chats: [Chat]?
@@ -20,6 +20,8 @@ class ChatViewModel: ObservableObject {
     private let chatRepository: ChatRepository = ChatRepository()
     private var chatsListener: ListenerRegistration?
     private var chatListener: ListenerRegistration?
+    private var queryTimer: Timer?
+
     
     func startListeningToChat(for chatId: String) {
         chatListener = chatRepository.fetchChat(chatId: chatId) { [weak self] chat in
@@ -28,15 +30,31 @@ class ChatViewModel: ObservableObject {
                 self?.chatIsLoading = false
             }
         }
+        Task {
+            await self.chatRepository.updatePresence(chatId: chatId)
+        }
+        queryTimer = Timer.scheduledTimer(withTimeInterval: 120, repeats: true) { _ in
+            Task {
+                await self.chatRepository.updatePresence(chatId: chatId)
+            }
+        }
     }
     
     func stopListeningToChat() {
-        chatListener?.remove()
-        chatListener = nil
-        chatIsLoading = true
+        self.queryTimer?.invalidate()
+        self.queryTimer = nil
+        Task {
+            await chatRepository.deletePresence(chatId: self.chat?.id ?? nil)
+        }
+        self.chatListener?.remove()
+        self.chatListener = nil
+        self.chatIsLoading = true
+        self.chat = nil
     }
     
-    func incrementConnection(for chatId: String) async {
+    func incrementConnection() async {
+        guard let chatId = self.chat?.id else { return }
+
         do {
             try await chatRepository.incrementConnection(chatId: chatId)
         } catch {
@@ -44,7 +62,9 @@ class ChatViewModel: ObservableObject {
         }
     }
     
-    func decrementConnection(for chatId: String) async {
+    func decrementConnection() async {
+        guard let chatId = self.chat?.id else { return }
+
         do {
             try await chatRepository.decrementConnection(chatId: chatId)
         } catch {
@@ -67,9 +87,9 @@ class ChatViewModel: ObservableObject {
     }
     
     func stopFetchingChats() {
-        chatsListener?.remove()
-        chatsListener = nil
-        isLoading = true
+        self.chatsListener?.remove()
+        self.chatsListener = nil
+        self.isLoading = true
     }
     
     
