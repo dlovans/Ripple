@@ -7,10 +7,11 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseAuth
 import CoreLocation
 
 class ChatRepository {
-    let db = Firestore.firestore()
+    private let db = Firestore.firestore()
     
     func fetchChat(chatId: String, onUpdate: @escaping (Chat?) -> Void) -> ListenerRegistration? {
         let listener = db.collection("chats").document(chatId).addSnapshotListener { querySnapshot, error in
@@ -46,6 +47,33 @@ class ChatRepository {
             onUpdate(chat)
         }
         return listener
+    }
+    
+    func updatePresence(chatId: String) async {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let presenceRef = db.collection("chats").document(chatId).collection("listeners").document(userId)
+        
+        do {
+            try await presenceRef.setData([
+                "lastActive": FieldValue.serverTimestamp()
+            ], merge: true)
+        } catch {
+            print("Error manifesting presence: \(error.localizedDescription)")
+        }
+    }
+    
+    func deletePresence(chatId: String?) async {
+        guard let chatId else { return }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let presenceRef = db.collection("chats").document(chatId).collection("listeners").document(userId)
+        
+        do {
+            try await presenceRef.delete()
+        } catch {
+            print("Error deleting presence: \(error.localizedDescription).")
+        }
     }
     
     func incrementConnection(chatId: String) async throws {
