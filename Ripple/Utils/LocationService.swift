@@ -21,6 +21,7 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
         manager.delegate = self
         self.locationAuthorized = manager.authorizationStatus
         manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        manager.requestLocation()
     }
     
     func checkLocationAuthorization() {
