@@ -16,4 +16,5 @@ struct Chat: Identifiable, Codable {
     let longEnd: Double
     let latStart: Double
     let latEnd: Double
+    let description: String
 }
