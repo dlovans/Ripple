@@ -93,14 +93,13 @@ class ChatViewModel: ObservableObject {
     }
     
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> Bool {
-        let createdChatId = await chatRepository.createChat(chatName: chatName, zoneSize: zoneSize, location: location, maxConnections: maxConnections)
+    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int, description: String) async -> String? {
+        let createdChatId = await chatRepository.createChat(chatName: chatName, zoneSize: zoneSize, location: location, maxConnections: maxConnections, description: description)
         
         if let createdChatId {
-            self.startListeningToChat(for: createdChatId)
-            return true
+            return createdChatId
         } else {
-            return false
+            return nil
         }
     }
 }
