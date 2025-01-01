@@ -36,14 +36,25 @@ struct ChatView: View {
                             Image(systemName: "arrow.left")
                                 .foregroundStyle(.emerald)
                         }
-                        .frame(width: 80, alignment: .leading)
+                        .frame(width: 40, alignment: .leading)
                         Spacer()
-                        Text(chatViewModel.chat?.chatName ?? "Unknown")
-                            .frame(maxWidth: .infinity)
+                        Text(
+                            (chatViewModel.chat?.chatName.prefix(15) ?? "Unknown") +
+                            ((chatViewModel.chat?.chatName.count ?? 0) >= 15 ? "..." : "")
+                        )
+                        .frame(maxWidth: .infinity)
+                        .font(.subheadline)
                         Spacer()
-                        Text("\(chatViewModel.chat?.connections ?? 0)/\(chatViewModel.chat?.maxConnections ?? 100)")
-                            .foregroundStyle(.textcolor)
-                            .frame(width: 80, alignment: .trailing)
+                        HStack (spacing: 0) {
+                            Image(systemName: "person.fill")
+                                .foregroundStyle(.textcolor)
+                                .font(.caption2)
+                            Text("\(chatViewModel.chat?.connections ?? 1)")
+                                .foregroundStyle(.textcolor)
+                                .font(.caption2)
+                        }
+                        .frame(width: 40, alignment: .trailing)
+
                     }
                     .padding(5)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -58,13 +69,13 @@ struct ChatView: View {
                     }
                 }
                 .onDisappear {
-                        Task { @MainActor in
-                            navigateToChat = false
-                            await chatViewModel.decrementConnection()
-                            messageViewModel.unsubscribeFromMessages()
-                            chatViewModel.stopListeningToChat()
-                        }
+                    Task { @MainActor in
+                        navigateToChat = false
+                        await chatViewModel.decrementConnection()
+                        messageViewModel.unsubscribeFromMessages()
+                        chatViewModel.stopListeningToChat()
                     }
+                }
             }
         }
     }
