@@ -12,6 +12,7 @@ struct ChatFieldView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var messageViewModel: MessageViewModel
     
+    @State var disableButton: Bool = false
     @State var chatText: String = ""
     @FocusState var displayKeyboard: Bool
     
@@ -37,17 +38,20 @@ struct ChatFieldView: View {
                 }
             if !chatText.isEmpty {
                 Button {
+                    let tempChatText = self.chatText
+                    self.chatText = ""
                     Task {
+                        disableButton = true
                         if !chatText.isEmpty || chatViewModel.chat != nil {
-                            await messageViewModel.addMessage(message: chatText, username: userViewModel.user!.username, userId: userViewModel.user!.id, isPremium: userViewModel.user!.isPremium, chatId: chatViewModel.chat!.id)
-                            chatText = ""
+                            await messageViewModel.addMessage(message: tempChatText, username: userViewModel.user!.username, userId: userViewModel.user!.id, isPremium: userViewModel.user!.isPremium, chatId: chatViewModel.chat!.id)
+                            disableButton = false
                         }
                     }
                 } label: {
                     Image(systemName: "paperplane")
-                        .foregroundStyle(.textcolor)
+                        .foregroundStyle(.emerald)
                 }
-                .disabled(chatText.isEmpty || chatViewModel.chat == nil)
+                .disabled(chatText.isEmpty || chatViewModel.chat == nil || disableButton)
             }
         }
         .frame(maxWidth: .infinity)
@@ -61,6 +65,6 @@ struct ChatFieldView: View {
     }
 }
 
-#Preview {
-    ChatFieldView()
-}
+//#Preview {
+//    ChatFieldView()
+//}
