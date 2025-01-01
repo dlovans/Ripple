@@ -45,7 +45,8 @@ struct ChatSelectionView: View {
                                             title: chatItem.chatName,
                                             connections: chatItem.connections,
                                             maxConnections: chatItem.maxConnections,
-                                            chatId: chatItem.id
+                                            chatId: chatItem.id,
+                                            description: chatItem.description
                                         )
                                     }
                                 }
