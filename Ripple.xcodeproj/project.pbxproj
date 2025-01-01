@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CAAFDBD72D131EC700A84152 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CAAFDBD62D131EC700A84152 /* FirebaseAnalytics */; };
 		CAAFDBDA2D1321CD00A84152 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CAAFDBD92D1321CD00A84152 /* FirebaseAuth */; };
 		CAAFDBE02D148BEC00A84152 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = CAAFDBDF2D148BEC00A84152 /* FirebaseFirestore */; };
 		CAAFDBE22D148BF400A84152 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = CAAFDBE12D148BF400A84152 /* FirebaseCore */; };
@@ -30,7 +29,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CAAFDBD72D131EC700A84152 /* FirebaseAnalytics in Frameworks */,
 				CAAFDBDA2D1321CD00A84152 /* FirebaseAuth in Frameworks */,
 				CAAFDBE22D148BF400A84152 /* FirebaseCore in Frameworks */,
 				CAAFDBE02D148BEC00A84152 /* FirebaseFirestore in Frameworks */,
@@ -84,7 +82,6 @@
 			);
 			name = Ripple;
 			packageProductDependencies = (
-				CAAFDBD62D131EC700A84152 /* FirebaseAnalytics */,
 				CAAFDBD92D1321CD00A84152 /* FirebaseAuth */,
 				CAAFDBDF2D148BEC00A84152 /* FirebaseFirestore */,
 				CAAFDBE12D148BF400A84152 /* FirebaseCore */,
@@ -365,11 +362,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CAAFDBD62D131EC700A84152 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CAAFDBD52D131EC700A84152 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
 		CAAFDBD92D1321CD00A84152 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CAAFDBD52D131EC700A84152 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
