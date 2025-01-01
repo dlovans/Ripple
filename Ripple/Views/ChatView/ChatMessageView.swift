@@ -16,7 +16,11 @@ struct ChatMessageView: View {
     var body: some View {
         VStack (alignment: .leading) {
             Text("@\(username)")
+                .foregroundStyle(isMe ? .black : .textcolor)
+                .font(.subheadline)
             Text(message)
+                .foregroundStyle(isMe ? .black : .textcolor)
+                .font(.callout)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 10)
