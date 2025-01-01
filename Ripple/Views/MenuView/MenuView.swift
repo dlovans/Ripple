@@ -55,7 +55,6 @@ struct MenuView: View {
                 selection = 2
             } else {
                 selection = 1
-                locationService.requestLocation()
             }
         }
         .onChange(of: locationService.locationAuthorized, { _, newValue in
