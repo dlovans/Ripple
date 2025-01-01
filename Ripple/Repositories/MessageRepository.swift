@@ -47,7 +47,8 @@ class MessageRepository {
     }
     
     func createMessage(message: String, username: String, userId: String, isPremium: Bool, chatId: String) async -> Bool {
-        let chatRef = db.collection("chats").document(chatId).collection("messages")
+        let messagesRef = db.collection("chats").document(chatId).collection("messages")
+        let chatRef = db.collection("chats").document(chatId)
         
         let messageData: [String: Any] = [
             "message": message,
@@ -59,7 +60,10 @@ class MessageRepository {
             
         
         do {
-            try await chatRef.addDocument(data: messageData)
+            try await messagesRef.addDocument(data: messageData)
+            try await chatRef.updateData([
+                "lastActive": FieldValue.serverTimestamp()
+            ])
             return true
         } catch {
             return false
