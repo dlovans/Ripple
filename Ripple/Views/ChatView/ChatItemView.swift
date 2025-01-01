@@ -17,6 +17,7 @@ struct ChatItemView: View {
     let connections: Int
     let maxConnections: Int
     let chatId: String
+    let description: String
     
     var body: some View {
         Button {
@@ -24,16 +25,29 @@ struct ChatItemView: View {
             messageViewModel.subscribeToMessages(chatId: chatId)
             navigateToChat = true
         } label: {
-            HStack {
-                Text(title.count >= 20 ? title.prefix(20) + "..." : title)
+            VStack (spacing: 10) {
+                HStack {
+                    Text(title.count >= 15 ? title.prefix(15) + "..." : title)
+                        .foregroundStyle(.black)
+                        .font(.subheadline)
+                    Spacer()
+                    HStack (spacing: 0) {
+                        Image(systemName: "person.fill")
+                            .foregroundStyle(.black)
+                            .font(.caption)
+                        Text("\(connections)/\(maxConnections)")
+                            .foregroundStyle(.black)
+                            .font(.caption)
+                        Image(systemName: "arrow.right")
+                            .foregroundStyle(Color.black)
+                            .font(.caption)
+                    }
+                }
+                Text(description)
                     .foregroundStyle(.black)
-                Spacer()
-                Image(systemName: "person.fill")
-                    .foregroundStyle(.black)
-                Text("\(connections)/\(maxConnections)")
-                    .foregroundStyle(.black)
-                Image(systemName: "arrow.right")
-                    .foregroundStyle(Color.black)
+                    .font(.footnote)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .disabled(connections >= maxConnections)
