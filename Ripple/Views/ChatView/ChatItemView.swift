@@ -12,6 +12,7 @@ struct ChatItemView: View {
     @EnvironmentObject var messageViewModel: MessageViewModel
     
     @Binding var navigateToChat: Bool
+    @State var displayReportChat: Bool = false
     
     let title: String
     let connections: Int
@@ -48,6 +49,24 @@ struct ChatItemView: View {
                     .font(.footnote)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                
+                HStack {
+                    Button {
+                        displayReportChat = true
+                    } label: {
+                        HStack (spacing: 0) {
+                            Group {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(Color.orange)
+                                Text("Report")
+                                    .foregroundStyle(Color.black)
+                            }
+                            .font(.footnote)
+                            .opacity(0.5)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .disabled(connections >= maxConnections)
@@ -55,5 +74,8 @@ struct ChatItemView: View {
         .padding()
         .background(.emerald)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .sheet(isPresented: $displayReportChat) {
+            ChatItemReportView(chatId: chatId)
+        }
     }
 }
