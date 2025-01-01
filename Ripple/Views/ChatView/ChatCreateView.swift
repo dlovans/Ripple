@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ChatCreateView: View {
+    @EnvironmentObject var messageViewModel: MessageViewModel
     @EnvironmentObject var locationService: LocationService
     @EnvironmentObject var chatViewModel: ChatViewModel
     @Binding var navigateToChat: Bool
@@ -16,6 +17,11 @@ struct ChatCreateView: View {
     @State private var zoneSize: Int = 1
     @State private var maxUsers: Int = 1
     @State private var disableButtons: Bool = false
+    @State private var description: String = ""
+    
+    private var disableCreateButton: Bool {
+        return createChatTitle.isEmpty || disableButtons || description.isEmpty
+    }
     
     private var zoneSizeConstant: ZoneSize {
         switch self.zoneSize {
@@ -59,7 +65,7 @@ struct ChatCreateView: View {
                                 Text("Title of your chat...")
                                     .foregroundStyle(.textcolor)
                                     .opacity(0.5)
-                                    .padding(.leading, 20)
+                                    .padding(.leading, 18)
                                     .allowsHitTesting(false)
                             }
                         }
@@ -113,42 +119,65 @@ struct ChatCreateView: View {
                             .stroke(.emerald, lineWidth: 2)
                     }
                     
+                    TextField("Description", text: $description, axis: .vertical)
+                        .lineLimit(7, reservesSpace: true)
+                        .padding()
+                        .foregroundStyle(.textcolor)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(alignment: .topLeading) {
+                            if description.isEmpty {
+                                Text("Describe purpose of chat...")
+                                    .foregroundStyle(.textcolor)
+                                    .opacity(0.5)
+                                    .padding(.leading, 18)
+                                    .padding(.top, 18)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(.emerald, lineWidth: 2)
+                        }
+                        .onChange(of: description) { _, newDescription in
+                            if description.count > 200 {
+                                description = String(description.prefix(200))
+                            }
+                        }
+                    
                     HStack {
                         Button {
                             disableButtons = true
-                            Task {
-                                await MainActor.run {
-                                    disableButtons = true
-                                }
+                            Task { @MainActor in
+                                disableButtons = true
                                 
                                 let newChat = await chatViewModel.createChat(
                                     chatName: createChatTitle,
                                     zoneSize: zoneSizeConstant,
                                     location: locationService.lastKnownLocation!,
-                                    maxConnections: maxConnections
+                                    maxConnections: maxConnections,
+                                    description: description
                                 )
                                 
-                                await MainActor.run {
-                                    if newChat {
-                                        navigateToChat = true
-                                        isPresented.toggle()
-                                    } else {
-                                        disableButtons = false
-                                        return
-                                    }
+                                if let newChat {
+                                    chatViewModel.startListeningToChat(for: newChat)
+                                    messageViewModel.subscribeToMessages(chatId: newChat)
+                                    navigateToChat = true
+                                    isPresented.toggle()
+                                } else {
+                                    disableButtons = false
+                                    return
                                 }
+                                
                             }
                         } label: {
                             Text("Create")
                                 .foregroundStyle(.textcolor)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(createChatTitle.isEmpty || disableButtons ? Color.gray : .emerald)
+                                .background(disableCreateButton ? Color.gray : .emerald)
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
-                        .disabled(createChatTitle.isEmpty || disableButtons)
-                        .padding()
-                        
+                        .disabled(disableCreateButton)
                         Button {
                             isPresented.toggle()
                         } label: {
@@ -160,7 +189,6 @@ struct ChatCreateView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                         .disabled(disableButtons)
-                        .padding()
                     }
                 }
             }
