@@ -41,7 +41,8 @@ class ChatRepository {
                 longStart: data["longStart"] as? Double ?? 0.0,
                 longEnd: data["longEnd"] as? Double ?? 0.0,
                 latStart: data["latStart"] as? Double ?? 0.0,
-                latEnd: data["latEnd"] as? Double ?? 0.0
+                latEnd: data["latEnd"] as? Double ?? 0.0,
+                description: data["description"] as? String ?? ""
             )
             
             onUpdate(chat)
@@ -85,7 +86,7 @@ class ChatRepository {
     }
     
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int) async -> String? {
+    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int, description: String) async -> String? {
         let geoData = calculateBoundingBox(center: location, zoneSize: zoneSize)
         let chatData: [String: Any] = [
             "chatName": chatName,
@@ -95,7 +96,8 @@ class ChatRepository {
             "longStart": geoData.longStart,
             "longEnd": geoData.longEnd,
             "latStart": geoData.latStart,
-            "latEnd": geoData.latEnd
+            "latEnd": geoData.latEnd,
+            "description": description
         ]
         
         do {
@@ -126,13 +128,6 @@ class ChatRepository {
     }
     
     func fetchChats(center: Coordinate, onUpdate: @escaping ([Chat]) -> Void) -> ListenerRegistration? {
-        let geoData = calculateBoundingBox(center: center, zoneSize: .medium)
-        print(geoData.latStart)
-        print(geoData.latEnd)
-        print(geoData.longStart)
-        print(geoData.longEnd)
-        print("test chats")
-        
         let listener = db.collection("chats")
             .whereField("longStart", isLessThanOrEqualTo: center.longitude)
             .whereField("longEnd", isGreaterThanOrEqualTo: center.longitude)
@@ -154,23 +149,16 @@ class ChatRepository {
                 var chats: [Chat] = []
                 
                 for document in querySnapshot.documents {
-                    let chatName = document.data()["chatName"] as? String ?? "Unknown Chat"
-                    let connections = document.data()["connections"] as? Int ?? 0
-                    let maxConnections = document.data()["maxConnections"] as? Int ?? 100
-                    let longStart = document.data()["longStart"] as? Double ?? 0.0
-                    let longEnd = document.data()["longEnd"] as? Double ?? 0.0
-                    let latStart = document.data()["latStart"] as? Double ?? 0.0
-                    let latEnd = document.data()["latEnd"] as? Double ?? 0.0
-                    
                     let chat = Chat(
                         id: document.documentID,
-                        chatName: chatName,
-                        connections: connections,
-                        maxConnections: maxConnections,
-                        longStart: longStart,
-                        longEnd: longEnd,
-                        latStart: latStart,
-                        latEnd: latEnd
+                        chatName: document.data()["chatName"] as? String ?? "Unknown Chat",
+                        connections: document.data()["connections"] as? Int ?? 0,
+                        maxConnections: document.data()["maxConnections"] as? Int ?? 100,
+                        longStart: document.data()["longStart"] as? Double ?? 0.0,
+                        longEnd: document.data()["longEnd"] as? Double ?? 0.0,
+                        latStart: document.data()["latStart"] as? Double ?? 0.0,
+                        latEnd: document.data()["latEnd"] as? Double ?? 0.0,
+                        description: document.data()["description"] as? String ?? ""
                     )
                     
                     chats.append(chat)
