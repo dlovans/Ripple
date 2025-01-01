@@ -21,7 +21,7 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
         manager.delegate = self
         self.locationAuthorized = manager.authorizationStatus
         manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        manager.requestLocation()
+        print("locationservice created")
     }
     
     func checkLocationAuthorization() {
@@ -37,14 +37,10 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
         }
     }
     
-    func requestLocation() {
-        manager.requestLocation()
-    }
-    
     func startPeriodicLocationTask() {
         queryTimer?.invalidate()
         manager.requestLocation()
-        queryTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
+        queryTimer = Timer.scheduledTimer(withTimeInterval: 90, repeats: true) { [weak self] _ in
             self?.manager.requestLocation()
         }
     }
