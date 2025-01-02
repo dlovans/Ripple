@@ -17,7 +17,7 @@ struct ChatSelectionView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                if chatViewModel.chatIsLoading && locationService.isLoading {
+                if locationService.isLoading {
                     SpinnerView()
                 } else {
                     Color.stone
@@ -38,7 +38,7 @@ struct ChatSelectionView: View {
                         }
                         ScrollView {
                             LazyVStack {
-                                ForEach(chatViewModel.localizedChats) {chatItem in
+                                ForEach(chatViewModel.chats) {chatItem in
                                     if chatItem.connections < chatItem.maxConnections {
                                         ChatItemView(
                                             navigateToChat: $navigateToChat,
@@ -76,7 +76,6 @@ struct ChatSelectionView: View {
                             if abs(oldValue.latitude - newValue.latitude) > tolerance || abs(oldValue.longitude - newValue.longitude) > tolerance {
                                 print("Updating location: latitude: \(locationService.lastKnownLocation?.latitude ?? 0), longitude: \(locationService.lastKnownLocation?.longitude ?? 0)")
                                 Task { @MainActor in
-                                    chatViewModel.stopFetchingChats()
                                     chatViewModel.startFetchingChats(center: locationService.lastKnownLocation ?? nil)
                                 }
                             }
@@ -87,7 +86,9 @@ struct ChatSelectionView: View {
             }
         }
         .onAppear {
-            locationService.startPeriodicLocationTask()
+            Task { @MainActor in
+                locationService.startPeriodicLocationTask()
+            }
         }
     }
 }

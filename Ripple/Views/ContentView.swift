@@ -10,25 +10,33 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var locationService: LocationService
     
     var body: some View {
-        if authViewModel.isLoading || userViewModel.isLoading {
-            SpinnerView()
-        } else {
-            VStack {
-                if authViewModel.isAuthenticated {
-                    if userViewModel.userLoaded {
-                        if let username = userViewModel.user?.username, !username.isEmpty {
-                            MenuView()
+        VStack {
+            if authViewModel.isLoading || userViewModel.isLoading {
+                SpinnerView()
+            } else {
+                VStack {
+                    if authViewModel.isAuthenticated {
+                        if userViewModel.userLoaded {
+                            if let username = userViewModel.user?.username, !username.isEmpty {
+                                MenuView()
+                            } else {
+                                NewUserView()
+                            }
                         } else {
-                            NewUserView()
+                            SpinnerView()
                         }
                     } else {
-                        SpinnerView()
+                        AuthView(authType: .login)
                     }
-                } else {
-                    AuthView(authType: .login)
                 }
+            }
+        }
+        .onAppear {
+            Task { @MainActor in
+                locationService.firstTimeReuqestLocation()
             }
         }
     }
@@ -44,7 +52,3 @@ extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
         return viewControllers.count > 1
     }
 }
-
-//#Preview {
-//    ContentView()
-//}

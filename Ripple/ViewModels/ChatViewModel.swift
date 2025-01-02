@@ -12,9 +12,7 @@ import FirebaseFirestore
 class ChatViewModel: ObservableObject {    
     @Published var messages: [Message] = []
     @Published var chat: Chat?
-    @Published var chats: [Chat]?
-    @Published var localizedChats: [Chat] = []
-    @Published var isLoading: Bool = true
+    @Published var chats: [Chat] = []
     @Published var chatIsLoading: Bool = true
     
     private let chatRepository: ChatRepository = ChatRepository()
@@ -33,9 +31,9 @@ class ChatViewModel: ObservableObject {
         Task {
             await self.chatRepository.updatePresence(chatId: chatId)
         }
-        queryTimer = Timer.scheduledTimer(withTimeInterval: 120, repeats: true) { _ in
+        queryTimer = Timer.scheduledTimer(withTimeInterval: 120, repeats: true) { [weak self] _ in
             Task {
-                await self.chatRepository.updatePresence(chatId: chatId)
+                await self?.chatRepository.updatePresence(chatId: chatId)
             }
         }
     }
@@ -80,16 +78,15 @@ class ChatViewModel: ObservableObject {
         
         chatsListener = chatRepository.fetchChats(center: center) { [weak self] chats in
             Task { @MainActor in
-                self?.localizedChats = chats
+                self?.chats = chats
             }
         }
-        isLoading = false
+        print("Fetched chats and attached listener.")
     }
     
     func stopFetchingChats() {
         self.chatsListener?.remove()
         self.chatsListener = nil
-        self.isLoading = true
     }
     
     

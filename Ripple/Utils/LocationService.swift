@@ -37,6 +37,10 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
         }
     }
     
+    func firstTimeReuqestLocation() {
+        manager.requestLocation()
+    }
+    
     func startPeriodicLocationTask() {
         queryTimer?.invalidate()
         manager.requestLocation()
@@ -64,7 +68,7 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
             lastKnownLocation = Coordinate(latitude: lastLocation.coordinate.latitude,
                                            longitude: lastLocation.coordinate.longitude)
         }
-        isLoading = false
+        if isLoading { isLoading = false }
         print("Location updated.")
     }
         
