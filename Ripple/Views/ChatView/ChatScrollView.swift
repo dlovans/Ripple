@@ -25,7 +25,7 @@ struct ChatScrollView: View {
                         )
                         .id(messageViewModel.messages[index].id)
                         .onAppear {
-                            if index == messageViewModel.messages.count - 15 {
+                            if index <= messageViewModel.messages.count - 13 {
                                 autoScroll = false
                             } else {
                                 autoScroll = true
@@ -33,6 +33,7 @@ struct ChatScrollView: View {
                         }
                     }
                 }
+                
                 .onChange(of: messageViewModel.messages) {
                     if let lastMessage = messageViewModel.messages.last {
                         if autoScroll {
@@ -42,6 +43,7 @@ struct ChatScrollView: View {
                 }
             }
         }
+//        .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
         .defaultScrollAnchor(.bottom)
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.immediately)
