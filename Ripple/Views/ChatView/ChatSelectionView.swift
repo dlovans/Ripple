@@ -52,6 +52,7 @@ struct ChatSelectionView: View {
                                 }
                             }
                         }
+                        .scrollIndicators(.hidden)
                     }
                     .frame(maxHeight: .infinity)
                     .padding()
@@ -65,29 +66,16 @@ struct ChatSelectionView: View {
                         }
                     }
                     .onDisappear {
-                        print("ChatSelectionView destroyed.")
-                        locationService.stopPeriodicLocationTask()
                         chatViewModel.stopFetchingChats()
                     }
-                    .onChange(of: locationService.lastKnownLocation) { oldValue, newValue in
-                        if let oldValue, let newValue {
-                            let tolerance = 0.000001
-
-                            if abs(oldValue.latitude - newValue.latitude) > tolerance || abs(oldValue.longitude - newValue.longitude) > tolerance {
-                                print("Updating location: latitude: \(locationService.lastKnownLocation?.latitude ?? 0), longitude: \(locationService.lastKnownLocation?.longitude ?? 0)")
-                                Task { @MainActor in
-                                    chatViewModel.startFetchingChats(center: locationService.lastKnownLocation ?? nil)
-                                }
+                    .onChange(of: locationService.lastKnownLocation) { _, newValue in
+                        if let newValue {
+                            Task { @MainActor in
+                                chatViewModel.startFetchingChats(center: newValue)
                             }
-
                         }
                     }
                 }
-            }
-        }
-        .onAppear {
-            Task { @MainActor in
-                locationService.startPeriodicLocationTask()
             }
         }
     }
