@@ -18,7 +18,7 @@ struct ChatFieldView: View {
     
     var body: some View {
         HStack {
-            TextField("Type something...", text: $chatText, axis: .vertical)
+            TextField("", text: $chatText, axis: .vertical)
                 .foregroundStyle(.textcolor)
                 .overlay(alignment: .leading) {
                     if chatText.isEmpty {
