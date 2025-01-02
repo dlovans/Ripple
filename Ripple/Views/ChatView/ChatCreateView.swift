@@ -16,8 +16,11 @@ struct ChatCreateView: View {
     @State private var createChatTitle: String = ""
     @State private var zoneSize: Int = 1
     @State private var maxUsers: Int = 1
-    @State private var disableButtons: Bool = false
     @State private var description: String = ""
+    @State private var adultChat: Bool = true
+    
+    @State private var disableButtons: Bool = false
+    @FocusState private var displayKeyboard: Bool
     
     private var disableCreateButton: Bool {
         return createChatTitle.isEmpty || disableButtons || description.isEmpty
@@ -59,6 +62,7 @@ struct ChatCreateView: View {
                 VStack(spacing: 10) {
                     TextField("Title of your chat...", text: $createChatTitle)
                         .padding()
+                        .focused($displayKeyboard)
                         .foregroundStyle(.textcolor)
                         .overlay(alignment: .leading) {
                             if createChatTitle.isEmpty {
@@ -119,9 +123,25 @@ struct ChatCreateView: View {
                             .stroke(.emerald, lineWidth: 2)
                     }
                     
+                    HStack {
+                        Text("18+")
+                            .foregroundStyle(.textcolor)
+                            .fontWeight(.bold)
+                        Spacer()
+                        Toggle("", isOn: $adultChat)
+                            .tint(.emerald)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(.emerald, lineWidth: 2)
+                    }
+                    
                     TextField("Description", text: $description, axis: .vertical)
                         .lineLimit(7, reservesSpace: true)
                         .padding()
+                        .focused($displayKeyboard)
                         .foregroundStyle(.textcolor)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                         .overlay(alignment: .topLeading) {
@@ -206,6 +226,9 @@ struct ChatCreateView: View {
                         .foregroundStyle(.textcolor)
                 }
             }
+        }
+        .onTapGesture {
+            displayKeyboard = false
         }
     }
 }
