@@ -56,9 +56,10 @@ class LocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let lastLocation = locations.last {
-            if isLoading { isLoading = false }
             lastKnownLocation = Coordinate(latitude: lastLocation.coordinate.latitude,
                                            longitude: lastLocation.coordinate.longitude)
+            if isLoading { isLoading = false }
         }
+        
     }
 }
