@@ -55,6 +55,9 @@ struct MenuView: View {
                 selection = 2
             } else {
                 selection = 1
+                        Task { @MainActor in
+                            locationService.startPeriodicLocationTask()
+                        }
             }
         }
         .onChange(of: locationService.locationAuthorized, { _, newValue in
@@ -62,6 +65,9 @@ struct MenuView: View {
                 selection = 2
             } else {
                 selection = 1
+                Task { @MainActor in
+                    locationService.startPeriodicLocationTask()
+                }
             }
         })
     }
