@@ -34,11 +34,6 @@ struct ContentView: View {
                 }
             }
         }
-        .onAppear {
-            Task { @MainActor in
-                locationService.firstTimeReuqestLocation()
-            }
-        }
     }
 }
 
