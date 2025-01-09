@@ -42,7 +42,9 @@ class ChatRepository {
                 longEnd: data["longEnd"] as? Double ?? 0.0,
                 latStart: data["latStart"] as? Double ?? 0.0,
                 latEnd: data["latEnd"] as? Double ?? 0.0,
-                description: data["description"] as? String ?? ""
+                description: data["description"] as? String ?? "",
+                createdByUserId: data["createdByUserId"] as? String ?? "",
+                active: data["active"] as? Bool ?? true
             )
             
             onUpdate(chat)
@@ -50,10 +52,23 @@ class ChatRepository {
         return listener
     }
     
-    func updatePresence(chatId: String) async {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        
-        let presenceRef = db.collection("chats").document(chatId).collection("listeners").document(userId)
+    func createPresence(chatId: String) async -> String? {
+        do {
+            let chatRef = db.collection("chats").document(chatId)
+            
+                let presenceRef = try await chatRef.collection("listeners").addDocument(data: [
+                    "lastActive": FieldValue.serverTimestamp()
+                ])
+            
+            return presenceRef.documentID
+        } catch {
+            print("Failed to create presence in chat: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    func updatePresence(chatId: String, presenceId: String) async {
+        let presenceRef = db.collection("chats").document(chatId).collection("listeners").document(presenceId)
         
         do {
             try await presenceRef.setData([
@@ -64,11 +79,11 @@ class ChatRepository {
         }
     }
     
-    func deletePresence(chatId: String?) async {
+    func deletePresence(chatId: String?, presenceId: String?) async {
         guard let chatId else { return }
-        guard let userId = Auth.auth().currentUser?.uid else { return }
+        guard let presenceId else { return }
         
-        let presenceRef = db.collection("chats").document(chatId).collection("listeners").document(userId)
+        let presenceRef = db.collection("chats").document(chatId).collection("listeners").document(presenceId)
         
         do {
             try await presenceRef.delete()
@@ -86,7 +101,7 @@ class ChatRepository {
     }
     
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int, description: String) async -> String? {
+    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int, description: String, createdByUserId: String) async -> String? {
         let geoData = calculateBoundingBox(center: location, zoneSize: zoneSize)
         let chatData: [String: Any] = [
             "chatName": chatName,
@@ -97,20 +112,14 @@ class ChatRepository {
             "longEnd": geoData.longEnd,
             "latStart": geoData.latStart,
             "latEnd": geoData.latEnd,
-            "description": description
+            "description": description,
+            "createdByUserId": createdByUserId,
+            "active": true,
+            "lastActive": FieldValue.serverTimestamp()
         ]
         
         do {
             let chatRef = try await db.collection("chats").addDocument(data: chatData)
-            
-            struct Message: Identifiable, Codable {
-                let id: String?
-                let userId: String?
-                let username: String
-                let message: String
-                let isMe: Bool
-                let isPremium: Bool
-            }
             
             try await chatRef.collection("messages").addDocument(data: [
                 "userId": "system",
@@ -129,6 +138,7 @@ class ChatRepository {
     
     func fetchChats(center: Coordinate, onUpdate: @escaping ([Chat]) -> Void) -> ListenerRegistration? {
         let listener = db.collection("chats")
+            .whereField( "active", isEqualTo: true)
             .whereField("longStart", isLessThanOrEqualTo: center.longitude)
             .whereField("longEnd", isGreaterThanOrEqualTo: center.longitude)
             .whereField("latStart", isLessThanOrEqualTo: center.latitude)
@@ -158,7 +168,9 @@ class ChatRepository {
                         longEnd: document.data()["longEnd"] as? Double ?? 0.0,
                         latStart: document.data()["latStart"] as? Double ?? 0.0,
                         latEnd: document.data()["latEnd"] as? Double ?? 0.0,
-                        description: document.data()["description"] as? String ?? ""
+                        description: document.data()["description"] as? String ?? "",
+                        createdByUserId: document.data()["createdByUserId"] as? String ?? "",
+                        active: document.data()["active"] as? Bool ?? false
                     )
                     
                     chats.append(chat)
@@ -168,5 +180,9 @@ class ChatRepository {
             }
         
         return listener
+    }
+    
+    func createChatReport(chatId: String, report: String) {
+        
     }
 }
