@@ -46,7 +46,8 @@ struct ChatSelectionView: View {
                                             connections: chatItem.connections,
                                             maxConnections: chatItem.maxConnections,
                                             chatId: chatItem.id,
-                                            description: chatItem.description
+                                            description: chatItem.description,
+                                            chatCreatedByUserId: chatItem.createdByUserId
                                         )
                                     }
                                 }
