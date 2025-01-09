@@ -11,13 +11,14 @@ struct ChatCreateView: View {
     @EnvironmentObject var messageViewModel: MessageViewModel
     @EnvironmentObject var locationService: LocationService
     @EnvironmentObject var chatViewModel: ChatViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     @Binding var navigateToChat: Bool
     
     @State private var createChatTitle: String = ""
     @State private var zoneSize: Int = 1
     @State private var maxUsers: Int = 1
     @State private var description: String = ""
-    @State private var adultChat: Bool = true
+//    @State private var adultChat: Bool = true
     
     @State private var disableButtons: Bool = false
     @FocusState private var displayKeyboard: Bool
@@ -60,7 +61,7 @@ struct ChatCreateView: View {
                     .foregroundStyle(.textcolor)
                     .padding(.bottom, 20)
                 VStack(spacing: 10) {
-                    TextField("Title of your chat...", text: $createChatTitle)
+                    TextField("", text: $createChatTitle)
                         .padding()
                         .focused($displayKeyboard)
                         .foregroundStyle(.textcolor)
@@ -90,6 +91,7 @@ struct ChatCreateView: View {
                             Text("Extra Large").tag(3)
                         }
                         .tint(.textcolor)
+                        .preferredColorScheme(.dark)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
@@ -113,6 +115,7 @@ struct ChatCreateView: View {
                             Text("1000").tag(5)
                         }
                         .tint(.textcolor)
+                        .preferredColorScheme(.dark)
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
@@ -123,22 +126,22 @@ struct ChatCreateView: View {
                             .stroke(.emerald, lineWidth: 2)
                     }
                     
-                    HStack {
-                        Text("18+")
-                            .foregroundStyle(.textcolor)
-                            .fontWeight(.bold)
-                        Spacer()
-                        Toggle("", isOn: $adultChat)
-                            .tint(.emerald)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(.emerald, lineWidth: 2)
-                    }
+//                    HStack {
+//                        Text("18+")
+//                            .foregroundStyle(.textcolor)
+//                            .fontWeight(.bold)
+//                        Spacer()
+//                        Toggle("", isOn: $adultChat)
+//                            .tint(.emerald)
+//                    }
+//                    .frame(maxWidth: .infinity)
+//                    .padding()
+//                    .overlay {
+//                        RoundedRectangle(cornerRadius: 10)
+//                            .stroke(.emerald, lineWidth: 2)
+//                    }
                     
-                    TextField("Description", text: $description, axis: .vertical)
+                    TextField("", text: $description, axis: .vertical)
                         .lineLimit(7, reservesSpace: true)
                         .padding()
                         .focused($displayKeyboard)
@@ -175,7 +178,8 @@ struct ChatCreateView: View {
                                     zoneSize: zoneSizeConstant,
                                     location: locationService.lastKnownLocation!,
                                     maxConnections: maxConnections,
-                                    description: description
+                                    description: description,
+                                    createdByUserId: userViewModel.user?.id ?? ""
                                 )
                                 
                                 if let newChat {
