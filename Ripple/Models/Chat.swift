@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Chat: Identifiable, Codable {
+struct Chat: Identifiable, Codable, Equatable {
     let id: String
     let chatName: String
     let connections: Int
@@ -17,4 +17,6 @@ struct Chat: Identifiable, Codable {
     let latStart: Double
     let latEnd: Double
     let description: String
+    let createdByUserId: String
+    var active: Bool
 }
