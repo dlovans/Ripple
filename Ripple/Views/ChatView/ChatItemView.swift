@@ -10,15 +10,18 @@ import SwiftUI
 struct ChatItemView: View {
     @EnvironmentObject var chatViewModel: ChatViewModel
     @EnvironmentObject var messageViewModel: MessageViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     
     @Binding var navigateToChat: Bool
-    @State var displayReportChat: Bool = false
+    @State var displayChatReport: Bool = false
+    @State var messageId: String? = nil
     
     let title: String
     let connections: Int
     let maxConnections: Int
     let chatId: String
     let description: String
+    let chatCreatedByUserId: String
     
     var body: some View {
         Button {
@@ -50,23 +53,25 @@ struct ChatItemView: View {
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                HStack {
-                    Button {
-                        displayReportChat = true
-                    } label: {
-                        HStack (spacing: 0) {
-                            Group {
-                                Image(systemName: "exclamationmark.triangle.fill")
-                                    .foregroundStyle(Color.orange)
-                                Text("Report")
-                                    .foregroundStyle(Color.black)
+//                if userViewModel.user?.id != chatCreatedByUserId {
+                    HStack {
+                        Button {
+                            displayChatReport = true
+                        } label: {
+                            HStack (spacing: 0) {
+                                Group {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundStyle(Color.orange)
+                                    Text("Report")
+                                        .foregroundStyle(Color.black)
+                                }
+                                .font(.footnote)
+                                .opacity(0.5)
                             }
-                            .font(.footnote)
-                            .opacity(0.5)
                         }
                     }
-                }
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+//                }
             }
         }
         .disabled(connections >= maxConnections)
@@ -74,8 +79,8 @@ struct ChatItemView: View {
         .padding()
         .background(.emerald)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .sheet(isPresented: $displayReportChat) {
-            ChatItemReportView(chatId: chatId)
+        .sheet(isPresented: $displayChatReport) {
+            ChatItemReportView(displayChatReport: $displayChatReport, chatId: chatId, reportAgainstUserId: chatCreatedByUserId)
         }
     }
 }
