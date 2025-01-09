@@ -76,6 +76,13 @@ struct ChatView: View {
                         chatViewModel.stopListeningToChat()
                     }
                 }
+                .onChange(of: chatViewModel.chat) { _, newValue in
+                    if let active = newValue?.active {
+                        if !active {
+                            dismiss()
+                        }
+                    }
+                }
             }
         }
     }
