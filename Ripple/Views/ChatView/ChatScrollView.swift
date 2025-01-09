@@ -19,9 +19,11 @@ struct ChatScrollView: View {
                     ForEach(messageViewModel.messages.indices, id: \.self) { index in
                         ChatMessageView(
                             username: messageViewModel.messages[index].username,
+                            userId: messageViewModel.messages[index].userId,
                             message: messageViewModel.messages[index].message,
                             isMe: userViewModel.user?.id == messageViewModel.messages[index].userId,
-                            isPremium: messageViewModel.messages[index].isPremium
+                            isPremium: messageViewModel.messages[index].isPremium,
+                            messageId: messageViewModel.messages[index].id ?? ""
                         )
                         .id(messageViewModel.messages[index].id)
                         .onAppear {
@@ -33,7 +35,6 @@ struct ChatScrollView: View {
                         }
                     }
                 }
-                
                 .onChange(of: messageViewModel.messages) {
                     if let lastMessage = messageViewModel.messages.last {
                         if autoScroll {
@@ -43,7 +44,7 @@ struct ChatScrollView: View {
                 }
             }
         }
-//        .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
+        .scrollBounceBehavior(.basedOnSize, axes: [.vertical])
         .defaultScrollAnchor(.bottom)
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.immediately)
