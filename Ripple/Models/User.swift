@@ -11,4 +11,7 @@ struct User: Identifiable, Codable {
     var id: String
     var username: String
     var isPremium: Bool = false
+    var isBanned: Bool = false
+    var banLiftDate: Date?
+    var banMessage: String = ""
 }
