@@ -18,18 +18,19 @@ class UserRepository {
             let document = try await docRef.getDocument()
             
             if document.exists, let data = document.data() {
-                if let username = data["username"] as? String,
-                   let isPremium = data["isPremium"] as? Bool {
-                    print("Fetched user data.")
-                    return User(id: userId, username: username, isPremium: isPremium)
-                } else {
-                    print("Error: Missing or invalid fields in document.")
-                    return nil
-                }
+                return User(
+                    id: document.documentID,
+                    username: data["username"] as? String ?? "",
+                    isPremium: data["isPremium"] as? Bool ?? false,
+                    isBanned: data["isBanned"] as? Bool ?? false,
+                    banLiftDate: (data["banLiftDate"] as? Timestamp)?.dateValue() ?? nil,
+                    banMessage: data["banMessage"] as? String ?? ""
+                )
             } else {
                 try await db.collection("users").document(userId).setData([
                     "username": "",
-                    "isPremium": false
+                    "isPremium": false,
+                    "isBanned": false
                 ])
                 print("Created and fetched user data.")
 
