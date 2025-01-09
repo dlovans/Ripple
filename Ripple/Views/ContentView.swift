@@ -20,10 +20,27 @@ struct ContentView: View {
                 VStack {
                     if authViewModel.isAuthenticated {
                         if userViewModel.userLoaded {
-                            if let username = userViewModel.user?.username, !username.isEmpty {
-                                MenuView()
-                            } else {
-                                NewUserView()
+                            if let user = userViewModel.user {
+                                if user.isBanned {
+                                    ZStack {
+                                        Color.stone
+                                            .ignoresSafeArea()
+                                        VStack {
+                                            Text("You have been banned.")
+                                            Text("Ban reason: \(user.banMessage)")
+                                            HStack {
+                                                Text("Ban will be lifted on: ")
+                                                Text(user.banLiftDate ?? Date(), format: .dateTime)
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if !user.username.isEmpty {
+                                        MenuView()
+                                    } else {
+                                        NewUserView()
+                                    }
+                                }
                             }
                         } else {
                             SpinnerView()
