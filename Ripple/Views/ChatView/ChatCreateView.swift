@@ -18,7 +18,6 @@ struct ChatCreateView: View {
     @State private var zoneSize: Int = 1
     @State private var maxUsers: Int = 1
     @State private var description: String = ""
-//    @State private var adultChat: Bool = true
     
     @State private var disableButtons: Bool = false
     @FocusState private var displayKeyboard: Bool
@@ -126,21 +125,6 @@ struct ChatCreateView: View {
                             .stroke(.emerald, lineWidth: 2)
                     }
                     
-//                    HStack {
-//                        Text("18+")
-//                            .foregroundStyle(.textcolor)
-//                            .fontWeight(.bold)
-//                        Spacer()
-//                        Toggle("", isOn: $adultChat)
-//                            .tint(.emerald)
-//                    }
-//                    .frame(maxWidth: .infinity)
-//                    .padding()
-//                    .overlay {
-//                        RoundedRectangle(cornerRadius: 10)
-//                            .stroke(.emerald, lineWidth: 2)
-//                    }
-                    
                     TextField("", text: $description, axis: .vertical)
                         .lineLimit(7, reservesSpace: true)
                         .padding()
@@ -184,7 +168,6 @@ struct ChatCreateView: View {
                                 
                                 if let newChat {
                                     chatViewModel.startListeningToChat(for: newChat)
-                                    messageViewModel.subscribeToMessages(chatId: newChat)
                                     navigateToChat = true
                                     isPresented.toggle()
                                 } else {
