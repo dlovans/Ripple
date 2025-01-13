@@ -58,13 +58,13 @@ struct ChatView: View {
                     }
                     .padding(5)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    ChatScrollView()
+                    ChatMessagesListView()
                     ChatFieldView()
                 }
                 .padding()
                 .onAppear {
-                    chatId = chatViewModel.chat?.id ?? ""
-                    Task {
+                    Task { @MainActor in
+                        messageViewModel.subscribeToMessages(chatId: chatViewModel.chat?.id ?? "", blockedUserIds: userViewModel.user?.blockedUserIds ?? [])
                         await chatViewModel.incrementConnection()
                     }
                 }
@@ -81,6 +81,11 @@ struct ChatView: View {
                         if !active {
                             dismiss()
                         }
+                    }
+                }
+                .onChange(of: userViewModel.user!.blockedUserIds) { _, newValue in
+                    Task { @MainActor in
+                        messageViewModel.subscribeToMessages(chatId: chatViewModel.chat?.id ?? "", blockedUserIds: newValue)
                     }
                 }
             }
