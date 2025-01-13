@@ -14,4 +14,5 @@ struct User: Identifiable, Codable {
     var isBanned: Bool = false
     var banLiftDate: Date?
     var banMessage: String = ""
+    var blockedUserIds: [String] = []
 }
