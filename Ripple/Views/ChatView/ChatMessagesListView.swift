@@ -1,5 +1,5 @@
 //
-//  ChatScrollView.swift
+//  ChatMessagesListView.swift
 //  Ripple
 //
 //  Created by Dlovan Sharif on 2024-12-29.
