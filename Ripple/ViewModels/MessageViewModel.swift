@@ -14,8 +14,8 @@ class MessageViewModel: ObservableObject {
     
     private var messagesListener: ListenerRegistration?
     
-    func subscribeToMessages(chatId: String) {
-        messagesListener = messageRepository.getMessages(chatId: chatId) { [weak self] messages in
+    func subscribeToMessages(chatId: String, blockedUserIds: [String]) {
+        messagesListener = messageRepository.getMessages(chatId: chatId, blockedUserIds: blockedUserIds) { [weak self] messages in
             Task { @MainActor in
                 self?.messages = messages
             }
