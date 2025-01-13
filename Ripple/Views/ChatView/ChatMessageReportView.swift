@@ -16,9 +16,18 @@ struct ChatMessageReportView: View {
     let reportAgainstUsername: String
     
     @Binding var displayMessageReport: Bool
+    
+    @EnvironmentObject private var reportViewModel: ReportViewModel
+    @EnvironmentObject private var userViewModel: UserViewModel
+    @EnvironmentObject private var chatViewModel: ChatViewModel
     @State private var reportCategory: ReportCategory = .offensivecontent
     @State private var reportDescription: String = ""
+    @State private var disableButtons: Bool = false
+    @State private var disableReportButton: Bool = false
+    @State private var reportButtonText: String = "Report"
     
+    @Environment(\.dismiss) var dismiss
+
     var body: some View {
         ZStack {
             Color.stone
@@ -44,7 +53,6 @@ struct ChatMessageReportView: View {
                         }
                     }
                     .tint(.textcolor)
-                    .preferredColorScheme(.dark)
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
@@ -67,43 +75,51 @@ struct ChatMessageReportView: View {
                 
                 VStack {
                     Button {
-                        // Create report
+                        Task {
+                            disableButtons = true
+                            disableReportButton = true
+                            let status = await reportViewModel.createMessageReport(chatId: chatId, messageId: messageId, againstUserId: againstUserId, byUserId: byUserId, reportContent: reportDescription, reportType: .message)
+                            reportButtonText = status.rawValue
+                            if status == .reportsuccess {
+                                disableButtons = false
+                            } else {
+                                disableButtons = false
+                            }
+                        }
                     } label: {
-                        Text("Report User")
+                        Text(reportButtonText)
                             .foregroundStyle(.textcolor)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(.emerald)
+                            .background(disableButtons || disableReportButton || reportDescription.isEmpty ? .gray : .emerald)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    
+                    .disabled(disableReportButton || disableButtons || reportDescription.isEmpty)
+
                     Button {
-                        // Report and block user
+                        dismiss()
                     } label: {
-                        Text("Report and Block User")
+                        Text("Close")
                             .foregroundStyle(.textcolor)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(.orange)
+                            .background(disableButtons ? .gray : .red)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
-                    
-                    Button {
-                        displayMessageReport = false
-                    } label: {
-                        Text("Cancel")
-                            .foregroundStyle(.textcolor)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(.red)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    
+                    .disabled(disableButtons)
                 }
             }
             .padding()
             .padding(.top, 40)
             .frame(maxHeight: .infinity, alignment: .top)
+            .onDisappear {
+                reportDescription = ""
+                disableButtons = false
+                disableReportButton = false
+                reportButtonText = "Report"
+                displayMessageReport = false
+            }
+            
         }
     }
 }
