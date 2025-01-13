@@ -28,6 +28,7 @@ struct RippleApp: App {
     @StateObject private var chatViewModel = ChatViewModel()
     @StateObject private var locationService = LocationService()
     @StateObject private var messageViewModel = MessageViewModel()
+    @StateObject private var reportViewModel = ReportViewModel()
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
@@ -39,6 +40,8 @@ struct RippleApp: App {
                 .environmentObject(chatViewModel)
                 .environmentObject(locationService)
                 .environmentObject(messageViewModel)
+                .environmentObject(reportViewModel)
+                .preferredColorScheme(.dark)
         }
     }
 }
