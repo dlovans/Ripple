@@ -62,12 +62,9 @@ struct ChatSelectionView: View {
                             .navigationBarBackButtonHidden(true)
                     }
                     .onAppear {
-                        Task {
+                        Task { @MainActor in
                             chatViewModel.startFetchingChats(center: locationService.lastKnownLocation ?? nil)
                         }
-                    }
-                    .onDisappear {
-                        chatViewModel.stopFetchingChats()
                     }
                     .onChange(of: locationService.lastKnownLocation) { _, newValue in
                         if let newValue {
