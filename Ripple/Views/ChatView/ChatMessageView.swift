@@ -18,6 +18,7 @@ struct ChatMessageView: View {
     let messageId: String
     
     @State var displayMessageReport: Bool = false
+    @State var displayAlert: Bool = false
     
     var body: some View {
         VStack (alignment: .leading) {
@@ -27,25 +28,6 @@ struct ChatMessageView: View {
             Text(message)
                 .foregroundStyle(isMe ? .black : .textcolor)
                 .font(.callout)
-            //            if userViewModel.user?.id != userId {
-            HStack {
-                Button {
-                    displayMessageReport = true
-                } label: {
-                    HStack (spacing: 0) {
-                        Group {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(Color.orange)
-                            Text("Report")
-                                .foregroundStyle(Color.black)
-                        }
-                        .font(.footnote)
-                        .opacity(0.5)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            //            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 10)
@@ -62,6 +44,29 @@ struct ChatMessageView: View {
                 reportAgainstUsername: username,
                 displayMessageReport: $displayMessageReport
             )
+        }
+        .contextMenu {
+            Button {
+                displayMessageReport = true
+            } label: {
+                Text("Report")
+            }
+            Button {
+                displayAlert = true
+            } label: {
+                Text("Block")
+            }
+        }
+        .alert("Are you sure you want to block @\(username)?", isPresented: $displayAlert) {
+            Button("Yes", role: .none) {
+                Task { @MainActor in
+                    await userViewModel.blockUser(userId: userViewModel.user!.id, blockingUserId: userId)
+                }
+                
+            }
+            Button("Cancel", role: .cancel) {
+                displayAlert = false
+            }
         }
     }
 }
