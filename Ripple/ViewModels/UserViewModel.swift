@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseFirestore
 
 class UserViewModel: ObservableObject {
     @Published var user: User? = nil
@@ -18,10 +19,12 @@ class UserViewModel: ObservableObject {
     init() {
         if let isUser = Auth.auth().currentUser {
             Task { @MainActor in
-                await self.createUser(userId: isUser.uid)
-                DispatchQueue.main.async { [weak self] in
-                    self?.isLoading = false
-                    self?.userLoaded = true
+                userRepository.attachUserListener(userId: isUser.uid) { [weak self] user in
+                    if let user {
+                        self?.user = user
+                        self?.isLoading = false
+                        self?.userLoaded = true
+                    }
                 }
             }
         } else {
@@ -30,33 +33,43 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func createUser(userId: String) async {
-        Task { @MainActor in
-            isLoading = true
-            userLoaded = false
-        }
-        let newUser = await userRepository.createUser(userId: userId)
-        Task { @MainActor in
-            self.user = newUser
-            self.isLoading = false
-            self.userLoaded = true
+    func attachUserListener() {
+        userRepository.attachUserListener(userId: Auth.auth().currentUser?.uid ?? "") { [weak self] user in
+            if let user {
+                self?.user = user
+                self?.isLoading = false
+                self?.userLoaded = true
+            }
         }
     }
     
-    func destroyUserLocally() {
+    func createUserOnSignup() async {
+        await userRepository.createUserInFirestore(userId: Auth.auth().currentUser?.uid ?? "")
+    }
+    
+    func destroyUser() {
+        userRepository.destroyUserListener()
         self.user = nil
         self.userLoaded = false
     }
     
-    func updateUsername(username: String) async {
+    func updateUsername(username: String) async -> Bool {
         do {
             try await userRepository.updateUsername(userId: user?.id ?? "", username: username)
-            Task { @MainActor in
-                self.user?.username = username
-            }
             print("Successfully updated username.")
+            return true
         } catch {
             print("Failed to update username.")
+            return false
         }
+    }
+    
+    
+    func blockUser(userId: String, blockingUserId: String) async -> ReportAndBlockStatus {
+        return await userRepository.blockUser(user: userId, blocks: blockingUserId)
+    }
+    
+    func unblockUser(userId: String, blockedUserId: String) async -> ReportAndBlockStatus {
+        return await userRepository.unblockUser(blocking: userId, unblocking: blockedUserId)
     }
 }
