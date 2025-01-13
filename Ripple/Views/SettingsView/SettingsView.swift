@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var userViewModel: UserViewModel
+    @EnvironmentObject var chatViewModel: ChatViewModel
     @EnvironmentObject var locationService: LocationService
     @FocusState private var usernameIsFocused: Bool
     
@@ -39,7 +40,9 @@ struct SettingsView: View {
                         Button {
                             let logoutStatus = authViewModel.logout()
                             if logoutStatus {
-                                userViewModel.destroyUserLocally()
+                                chatViewModel.stopListeningToChat()
+                                chatViewModel.stopFetchingChats()
+                                userViewModel.destroyUser()
                             }
                         } label: {
                             Text("Logout")
