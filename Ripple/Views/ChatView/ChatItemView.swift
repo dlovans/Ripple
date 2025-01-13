@@ -26,7 +26,7 @@ struct ChatItemView: View {
     var body: some View {
         Button {
             chatViewModel.startListeningToChat(for: chatId)
-            messageViewModel.subscribeToMessages(chatId: chatId)
+            messageViewModel.subscribeToMessages(chatId: chatId, blockedUserIds: userViewModel.user?.blockedUserIds ?? [])
             navigateToChat = true
         } label: {
             VStack (spacing: 10) {
@@ -56,7 +56,10 @@ struct ChatItemView: View {
 //                if userViewModel.user?.id != chatCreatedByUserId {
                     HStack {
                         Button {
-                            displayChatReport = true
+                            Task { @MainActor in
+                                chatViewModel.stopFetchingChats()
+                                displayChatReport = true
+                            }
                         } label: {
                             HStack (spacing: 0) {
                                 Group {
@@ -80,7 +83,7 @@ struct ChatItemView: View {
         .background(.emerald)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $displayChatReport) {
-            ChatItemReportView(displayChatReport: $displayChatReport, chatId: chatId, reportAgainstUserId: chatCreatedByUserId)
+            ChatItemReportView(chatId: chatId, chatName: title, reportAgainstUserId: chatCreatedByUserId, displayChatReport: $displayChatReport)
         }
     }
 }
