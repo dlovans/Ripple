@@ -58,9 +58,13 @@ struct NewUserView: View {
                     Task {
                         updateClicked.toggle()
                         buttonText = "Updating..."
-                        await userViewModel.updateUsername(username: username)
+                        let status = await userViewModel.updateUsername(username: username)
+                        if status {
+                            buttonText = buttonStatusText
+                        } else {
+                            buttonText = "Failed to update username"
+                        }
                         updateClicked.toggle()
-                        buttonText = buttonStatusText
                     }
                 } label: {
                     Text(buttonText)
