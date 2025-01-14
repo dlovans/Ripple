@@ -77,10 +77,10 @@ struct ChatItemView: View {
 //                }
             }
         }
-        .disabled(connections >= maxConnections)
+        .disabled(connections >= maxConnections || !chatViewModel.chatIsLoading)
         .frame(maxWidth: .infinity)
         .padding()
-        .background(.emerald)
+        .background(chatViewModel.chatIsLoading ? .emerald : Color.gray)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $displayChatReport) {
             ChatItemReportView(chatId: chatId, chatName: title, reportAgainstUserId: chatCreatedByUserId, displayChatReport: $displayChatReport)

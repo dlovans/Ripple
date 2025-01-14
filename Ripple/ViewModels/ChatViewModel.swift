@@ -49,15 +49,17 @@ class ChatViewModel: ObservableObject {
     }
     
     func stopListeningToChat() {
+        if let chatId = self.chat?.id {
+            Task {
+                await chatRepository.deletePresence(chatId: chatId, presenceId: self.presenceId)
+            }
+        }
+        self.chat = nil
         self.queryTimer?.invalidate()
         self.queryTimer = nil
-        Task {
-            await chatRepository.deletePresence(chatId: self.chat?.id ?? nil, presenceId: self.presenceId)
-        }
         self.chatListener?.remove()
         self.chatListener = nil
         self.chatIsLoading = true
-        self.chat = nil
     }
     
     func incrementConnection() async {
