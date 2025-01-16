@@ -52,29 +52,6 @@ struct ChatItemView: View {
                     .font(.footnote)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
-//                if userViewModel.user?.id != chatCreatedByUserId {
-                    HStack {
-                        Button {
-                            Task { @MainActor in
-                                chatViewModel.stopFetchingChats()
-                                displayChatReport = true
-                            }
-                        } label: {
-                            HStack (spacing: 0) {
-                                Group {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundStyle(Color.orange)
-                                    Text("Report")
-                                        .foregroundStyle(Color.black)
-                                }
-                                .font(.footnote)
-                                .opacity(0.5)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-//                }
             }
         }
         .disabled(connections >= maxConnections || !chatViewModel.chatIsLoading)
@@ -83,7 +60,16 @@ struct ChatItemView: View {
         .background(chatViewModel.chatIsLoading ? .emerald : Color.gray)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .sheet(isPresented: $displayChatReport) {
-            ChatItemReportView(chatId: chatId, chatName: title, reportAgainstUserId: chatCreatedByUserId, displayChatReport: $displayChatReport)
+            ChatItemReportView(chatId: chatId, chatName: title, reportAgainstUserId: chatCreatedByUserId, reportByUserId: userViewModel.user?.id ?? "", displayChatReport: $displayChatReport)
+        }
+        .contextMenu {
+            if userViewModel.user?.id != chatCreatedByUserId {
+                Button {
+                    displayChatReport = true
+                } label: {
+                    Text("Report")
+                }
+            }
         }
     }
 }
