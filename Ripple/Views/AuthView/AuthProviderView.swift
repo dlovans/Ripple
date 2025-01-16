@@ -35,5 +35,5 @@ struct AuthProviderView: View {
 }
 
 #Preview {
-    AuthProviderView(authProvider: .Apple, authType: .login, iconPath: "Apple")
+    AuthProviderView(authProvider: .apple, authType: .login, iconPath: "Apple")
 }

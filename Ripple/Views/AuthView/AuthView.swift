@@ -33,8 +33,8 @@ struct AuthView: View {
                 AuthFieldsView(authType: authType)
                 
                 VStack {
-                    AuthProviderView(authProvider: .Apple, authType: authType, iconPath: "Apple")
-                    AuthProviderView(authProvider: .Google, authType: authType, iconPath: "Google")
+                    AuthProviderView(authProvider: .apple, authType: authType, iconPath: "Apple")
+                    AuthProviderView(authProvider: .google, authType: authType, iconPath: "Google")
                 }
                 .padding(.top, 40)
                 
