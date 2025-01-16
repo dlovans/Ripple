@@ -52,39 +52,31 @@ class UserRepository {
         userListener = nil
     }
     
-    func updateUsername(userId: String, username: String) async throws {
-        let docRef = db.collection("users").document(userId)
-        
-        try await docRef.updateData([
-            "username": username
-        ])
-    }
-    
     func blockUser(user userId: String, blocks blockUserId: String) async -> ReportAndBlockStatus {
         do {
             let userDocument = try await db.collection("users").document(userId).getDocument()
             
             if let blockedUsers = userDocument.data()?["blockedUsers"] as? [String] {
                 if blockedUsers.contains(blockUserId) {
-                    return .alreadyblocked
+                    return .alreadyBlocked
                 }
             }
             
             try await db.collection("users").document(userId).updateData(["blockedUserIds": FieldValue.arrayUnion([blockUserId])] )
-            return .blocksuccess
+            return .blockSuccess
         } catch {
             print("Failed to block user.")
-            return .blockfailed
+            return .blockFailure
         }
     }
     
     func unblockUser(blocking userId: String, unblocking blockedUserId: String) async -> ReportAndBlockStatus {
         do {
             try await db.collection("users").document(userId).updateData(["blockedUserIds": FieldValue.arrayRemove([blockedUserId])])
-            return .unblocksuccess
+            return .unblockSuccess
         } catch {
             print("Failed to unblock user.")
-            return .blockfailed
+            return .blockFailure
         }
     }
     
@@ -107,6 +99,64 @@ class UserRepository {
         } catch {
             print("Failed to create user in firestore")
         }
+    }
+    
+    func getBlockedUsernames(blockedUserIds: [String]) async -> [String: String] {
+        var usernames: [String: String] = [:]
+        do {
+            for userId in blockedUserIds {
+                let docRef = db.collection("users").document(userId)
+                let document = try await docRef.getDocument()
+                
+                if document.exists {
+                    let username = document.data()?["username"] as? String ?? ""
+                    usernames[userId] = username
+                }
+            }
+            return usernames
+        } catch {
+            print("Failed to fetch blocked users' usernames!")
+            return usernames
+        }
+    }
+    
+    func usernameAvailable(username: String) async -> UsernameStatus {
+        do {
+            let documents = try await db.collection("users")
+                .whereField("username", isEqualTo: username)
+                .limit(to: 1)
+                .getDocuments()
+            
+            if documents.isEmpty {
+                return .available
+            } else {
+                return .unavailable
+            }
+        } catch {
+            print("Failed to check if username is available.")
+            return .failure
+        }
+    }
+    
+    
+    func updateUsername(userId: String, username: String) async -> UsernameStatus {
+        let docRef = db.collection("users").document(userId)
         
+        do {
+            let isUsernameAvailable = await self.usernameAvailable(username: username)
+            
+            if isUsernameAvailable != .available {
+                return isUsernameAvailable
+            }
+            
+            try await docRef.updateData([
+                "username": username
+            ])
+            
+            return .success
+        } catch {
+            print("Failed to update username")
+            return .failure
+        }
     }
 }
