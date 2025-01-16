@@ -11,9 +11,10 @@ enum ReportCategory: String, CaseIterable {
     case
     harassment = "Harassment",
     defamation = "Defamation",
-    offensivecontent = "Offensive Content",
+    offensiveContent = "Offensive Content",
     phishing = "Phishing",
     exploitation = "Exploitation",
     abuse = "Abuse",
-    other = "Other"
+    other = "Other",
+    offensiveUsername = "Offensive Username"
 }

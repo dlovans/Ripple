@@ -13,4 +13,5 @@ struct Message: Identifiable, Codable, Equatable {
     let username: String
     let message: String
     let isPremium: Bool
+    let createdAt: String
 }

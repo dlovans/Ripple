@@ -8,7 +8,5 @@
 import Foundation
 
 enum ReportType: String, Codable {
-    case
-    message,
-    chat
+    case message, chat
 }

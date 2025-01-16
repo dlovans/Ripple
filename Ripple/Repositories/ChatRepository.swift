@@ -101,8 +101,16 @@ class ChatRepository {
     }
     
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int, description: String, createdByUserId: String) async -> String? {
+    func createChat(
+        chatName: String,
+        zoneSize: ZoneSize,
+        location: Coordinate,
+        maxConnections: Int,
+        description: String,
+        createdByUserId: String
+    ) async -> String? {
         let geoData = calculateBoundingBox(center: location, zoneSize: zoneSize)
+        
         let chatData: [String: Any] = [
             "chatName": chatName,
             "connections": 0,
@@ -143,6 +151,7 @@ class ChatRepository {
             .whereField("longEnd", isGreaterThanOrEqualTo: center.longitude)
             .whereField("latStart", isLessThanOrEqualTo: center.latitude)
             .whereField("latEnd", isGreaterThanOrEqualTo: center.latitude)
+            .order(by: "connections", descending: true)
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("Error listening to chats: \(error.localizedDescription)")
@@ -175,7 +184,6 @@ class ChatRepository {
                     
                     chats.append(chat)
                 }
-                
                 onUpdate(chats)
             }
         

@@ -8,5 +8,5 @@
 import Foundation
 
 enum AuthProvider {
-    case Google, Apple
+    case google, apple
 }

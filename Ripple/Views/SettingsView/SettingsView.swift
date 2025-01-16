@@ -36,7 +36,6 @@ struct SettingsView: View {
                             .foregroundStyle(.textcolor)
                         ScrollView {
                             VStack {
-//                                UsernameView(disableInputs: $disableInputs)
                                 BlockListButtonView(disableInputs: $disableInputs, navigateToBlockList: $navigateToBlockList)
                                     .navigationDestination(isPresented: $navigateToBlockList) {
                                         BlockListView()
