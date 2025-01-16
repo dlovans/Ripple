@@ -189,8 +189,4 @@ class ChatRepository {
         
         return listener
     }
-    
-    func createChatReport(chatId: String, report: String) {
-        
-    }
 }
