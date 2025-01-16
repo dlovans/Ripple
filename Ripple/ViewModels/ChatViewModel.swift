@@ -102,8 +102,22 @@ class ChatViewModel: ObservableObject {
     }
     
     
-    func createChat(chatName: String, zoneSize: ZoneSize, location: Coordinate, maxConnections: Int, description: String, createdByUserId: String) async -> String? {
-        let createdChatId = await chatRepository.createChat(chatName: chatName, zoneSize: zoneSize, location: location, maxConnections: maxConnections, description: description, createdByUserId: createdByUserId)
+    func createChat(
+        chatName: String,
+        zoneSize: ZoneSize,
+        location: Coordinate,
+        maxConnections: Int,
+        description: String,
+        createdByUserId: String
+    ) async -> String? {
+        let createdChatId = await chatRepository.createChat(
+            chatName: chatName,
+            zoneSize: zoneSize,
+            location: location,
+            maxConnections: maxConnections,
+            description: description,
+            createdByUserId: createdByUserId
+        )
         
         if let createdChatId {
             return createdChatId
