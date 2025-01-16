@@ -8,16 +8,20 @@
 import SwiftUI
 
 struct ChatItemReportView: View {
-    @EnvironmentObject var chatViewModel: ChatViewModel
+    @EnvironmentObject private var chatViewModel: ChatViewModel
+    @EnvironmentObject private var reportViewModel: ReportViewModel
+    @EnvironmentObject private var userViewModel: UserViewModel
     
     let chatId: String
     let chatName: String
     let reportAgainstUserId: String
+    let reportByUserId: String
     
     @Binding var displayChatReport: Bool
     
-    @State private var reportCategory: ReportCategory = .offensivecontent
+    @State private var reportCategory: ReportCategory = .offensiveContent
     @State private var reportDescription: String = ""
+    @State private var disableButtons: Bool = false
     
     var body: some View {
         ZStack {
@@ -71,23 +75,30 @@ struct ChatItemReportView: View {
                 
                 HStack {
                     Button {
-                        // Create report
+                        Task {
+                            await reportViewModel.createChatReport(chatId: chatId, chatCreatedById: reportAgainstUserId, reportById: userViewModel.user?.id ?? "", reportContent: reportDescription, reportType: ReportType.chat)
+                        }
                     } label: {
                         Text("Report")
                     }
+                    .disabled(reportDescription.isEmpty || disableButtons)
                     
                     
                     Button {
                         displayChatReport = false
                     } label: {
-                        Text("Cancel")
+                        Text("Close")
                     }
+                    .disabled(disableButtons)
                     
                 }
             }
             .padding()
             .padding(.top, 40)
             .frame(maxHeight: .infinity, alignment: .top)
+            .onDisappear {
+                reportDescription = ""
+            }
         }
     }
 }
