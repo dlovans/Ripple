@@ -23,7 +23,8 @@ struct ChatMessagesListView: View {
                             message: messageViewModel.messages[index].message,
                             isMe: userViewModel.user?.id == messageViewModel.messages[index].userId,
                             isPremium: messageViewModel.messages[index].isPremium,
-                            messageId: messageViewModel.messages[index].id ?? ""
+                            messageId: messageViewModel.messages[index].id ?? "",
+                            createdAt: messageViewModel.messages[index].createdAt
                         )
                         .id(messageViewModel.messages[index].id)
                         .onAppear {

@@ -34,13 +34,32 @@ class MessageRepository {
                 let messages = querySnapshot.documents
                     .filter { !blockedUserIds.contains($0.data()["userId"] as? String ?? "Unknown")}
                     .map { QueryDocumentSnapshot in
-                        Message(
-                            id: QueryDocumentSnapshot.documentID,
-                            userId: QueryDocumentSnapshot.data()["userId"] as? String ?? "Unknown",
-                            username: QueryDocumentSnapshot.data()["username"] as? String ?? "Unknown",
-                            message: QueryDocumentSnapshot.data()["message"] as? String ?? "Unknown",
-                            isPremium: QueryDocumentSnapshot.data()["isPremium"] as? Bool ?? false
-                        )
+                        if let timestamp = QueryDocumentSnapshot.data()["timestamp"] as? Timestamp {
+                            let date = timestamp.dateValue()
+                            let hourMinute = Calendar.current.dateComponents([.hour, .minute], from: date)
+                            
+                            let hour = hourMinute.hour.map { $0 < 10 ? "0\($0)" : "\($0)" } ?? ""
+                            let minute = hourMinute.minute.map { $0 < 10 ? "0\($0)" : "\($0)" } ?? ""
+                            
+                            return Message(
+                                id: QueryDocumentSnapshot.documentID,
+                                userId: QueryDocumentSnapshot.data()["userId"] as? String ?? "Unknown",
+                                username: QueryDocumentSnapshot.data()["username"] as? String ?? "Unknown",
+                                message: QueryDocumentSnapshot.data()["message"] as? String ?? "Unknown",
+                                isPremium: QueryDocumentSnapshot.data()["isPremium"] as? Bool ?? false,
+                                createdAt: "\(hour):\(minute)"
+                            )
+                        } else {
+                            return Message(
+                                id: QueryDocumentSnapshot.documentID,
+                                userId: QueryDocumentSnapshot.data()["userId"] as? String ?? "Unknown",
+                                username: QueryDocumentSnapshot.data()["username"] as? String ?? "Unknown",
+                                message: QueryDocumentSnapshot.data()["message"] as? String ?? "Unknown",
+                                isPremium: QueryDocumentSnapshot.data()["isPremium"] as? Bool ?? false,
+                                createdAt: ""
+                            )
+                        }
+
                     }
                 
                 onUpdate(messages)

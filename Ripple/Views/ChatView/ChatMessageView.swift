@@ -16,15 +16,22 @@ struct ChatMessageView: View {
     let isMe: Bool
     var isPremium = false
     let messageId: String
+    let createdAt: String
     
     @State var displayMessageReport: Bool = false
     @State var displayAlert: Bool = false
     
     var body: some View {
         VStack (alignment: .leading) {
-            Text("@\(username)")
-                .foregroundStyle(isMe ? .black : .textcolor)
-                .font(.subheadline)
+            HStack {
+                Text("@\(username)")
+                    .foregroundStyle(isMe ? .black : .textcolor)
+                    .font(.subheadline)
+                Spacer()
+                Text(createdAt)
+                    .foregroundStyle(isMe ? .black : .textcolor)
+                    .font(.caption)
+            }
             Text(message)
                 .foregroundStyle(isMe ? .black : .textcolor)
                 .font(.callout)
