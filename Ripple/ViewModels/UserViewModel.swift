@@ -53,15 +53,12 @@ class UserViewModel: ObservableObject {
         self.userLoaded = false
     }
     
-    func updateUsername(username: String) async -> Bool {
-        do {
-            try await userRepository.updateUsername(userId: user?.id ?? "", username: username)
-            print("Successfully updated username.")
-            return true
-        } catch {
-            print("Failed to update username.")
-            return false
-        }
+    func updateUsername(username: String) async -> UsernameStatus {
+        return await userRepository.updateUsername(userId: user?.id ?? "", username: username)
+    }
+    
+    func usernameAvailable(username: String) async -> UsernameStatus {
+        return await userRepository.usernameAvailable(username: username)
     }
     
     
@@ -71,5 +68,9 @@ class UserViewModel: ObservableObject {
     
     func unblockUser(userId: String, blockedUserId: String) async -> ReportAndBlockStatus {
         return await userRepository.unblockUser(blocking: userId, unblocking: blockedUserId)
+    }
+    
+    func getBlockedUsernames() async -> [String: String] {
+        return await userRepository.getBlockedUsernames(blockedUserIds: user?.blockedUserIds ?? [])
     }
 }
