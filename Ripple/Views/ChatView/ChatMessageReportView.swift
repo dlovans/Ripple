@@ -20,7 +20,7 @@ struct ChatMessageReportView: View {
     @EnvironmentObject private var reportViewModel: ReportViewModel
     @EnvironmentObject private var userViewModel: UserViewModel
     @EnvironmentObject private var chatViewModel: ChatViewModel
-    @State private var reportCategory: ReportCategory = .offensivecontent
+    @State private var reportCategory: ReportCategory = .offensiveContent
     @State private var reportDescription: String = ""
     @State private var disableButtons: Bool = false
     @State private var disableReportButton: Bool = false
@@ -80,7 +80,7 @@ struct ChatMessageReportView: View {
                             disableReportButton = true
                             let status = await reportViewModel.createMessageReport(chatId: chatId, messageId: messageId, againstUserId: againstUserId, byUserId: byUserId, reportContent: reportDescription, reportType: .message)
                             reportButtonText = status.rawValue
-                            if status == .reportsuccess {
+                            if status == .reportSuccess {
                                 disableButtons = false
                             } else {
                                 disableButtons = false

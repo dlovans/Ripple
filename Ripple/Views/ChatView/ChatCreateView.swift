@@ -153,7 +153,6 @@ struct ChatCreateView: View {
                     
                     HStack {
                         Button {
-                            disableButtons = true
                             Task { @MainActor in
                                 disableButtons = true
                                 
@@ -174,7 +173,6 @@ struct ChatCreateView: View {
                                     disableButtons = false
                                     return
                                 }
-                                
                             }
                         } label: {
                             Text("Create")
