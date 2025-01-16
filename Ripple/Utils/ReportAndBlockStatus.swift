@@ -9,11 +9,11 @@ import Foundation
 
 enum ReportAndBlockStatus: String, Codable {
     case
-    reportfailed = "Failed to report user",
-    reportsuccess = "User reported successfully",
-    blockfailed = "Failed to block user",
-    blocksuccess = "User blocked successfully",
-    unblocksuccess = "User unblocked successfully",
-    unblockfailed = "Failed to unblock user",
-    alreadyblocked = "User is already blocked"
+    reportFailure = "Failed to report user",
+    reportSuccess = "User reported successfully",
+    blockFailure = "Failed to block user",
+    blockSuccess = "User blocked successfully",
+    unblockSuccess = "User unblocked successfully",
+    unblockFailure = "Failed to unblock user",
+    alreadyBlocked = "User is already blocked"
 }
