@@ -23,10 +23,28 @@ class ReportRepository {
         
         do {
             try await db.collection("reports").addDocument(data: report)
-            return .reportsuccess
+            return .reportSuccess
         } catch {
-            print("Failed to create report: \(error).")
-            return .reportfailed
+            print("Failed to create message report: \(error).")
+            return .reportFailure
+        }
+    }
+    
+    func createChatReport(chatId: String, chatCreatedById: String, reportById: String, reportContent: String, reportType: ReportType) async -> ReportAndBlockStatus {
+        let report: [String: Any] = [
+            "chatId": chatId,
+            "chatCreatedById": chatCreatedById,
+            "reportById": reportById,
+            "reportContent": reportContent,
+            "reportType": reportType.rawValue
+        ]
+        
+        do {
+            try await db.collection("reports").addDocument(data: report)
+            return .reportSuccess
+        } catch {
+            print("Failed to create chat report: \(error).")
+            return .reportFailure
         }
     }
 }
