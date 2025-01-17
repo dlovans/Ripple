@@ -22,6 +22,8 @@ struct ChatItemReportView: View {
     @State private var reportCategory: ReportCategory = .offensiveContent
     @State private var reportDescription: String = ""
     @State private var disableButtons: Bool = false
+    @State private var disableReportButton: Bool = false
+    @State private var reportButtonText: String = "Report"
     
     var body: some View {
         ZStack {
@@ -75,8 +77,20 @@ struct ChatItemReportView: View {
                 
                 HStack {
                     Button {
-                        Task {
-                            await reportViewModel.createChatReport(chatId: chatId, chatCreatedById: reportAgainstUserId, reportById: userViewModel.user?.id ?? "", reportContent: reportDescription, reportType: ReportType.chat)
+                        Task { @MainActor in
+                            disableButtons = true
+                            disableReportButton = true
+                            let status = await reportViewModel.createChatReport(chatId: chatId, chatCreatedById: reportAgainstUserId, reportById: userViewModel.user?.id ?? "", reportContent: reportDescription, reportType: ReportType.chat)
+                            
+                            if status == .reportSuccess {
+                                reportDescription = ""
+                                reportButtonText = "Reported"
+                                disableButtons = false
+                            } else {
+                                reportButtonText = "Failed to create report...try again."
+                                disableReportButton = false
+                                disableButtons = false
+                            }
                         }
                     } label: {
                         Text("Report")
